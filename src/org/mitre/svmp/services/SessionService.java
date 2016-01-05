@@ -25,6 +25,7 @@ import android.hardware.SensorEventListener;
 import android.os.*;
 import android.util.Log;
 import android.widget.Toast;
+
 import org.mitre.svmp.activities.ConnectionList;
 import org.mitre.svmp.apprtc.AppRTCClient;
 import org.mitre.svmp.apprtc.MessageHandler;
@@ -36,6 +37,7 @@ import org.mitre.svmp.protocol.SVMPProtocol;
 import org.mitre.svmp.protocol.SVMPProtocol.AuthResponse.AuthResponseType;
 import org.mitre.svmp.protocol.SVMPProtocol.Response;
 import com.citicrowd.oval.R;
+import com.oval.app.fragments.OvalDrawerActivity;
 
 /**
  * @author Joe Portner
@@ -207,7 +209,7 @@ public class SessionService extends Service implements StateObserver, MessageHan
                 .setOngoing(true);
 
         // Creates an explicit intent for the ConnectionList
-        Intent resultIntent = new Intent(this, ConnectionList.class);
+        Intent resultIntent = new Intent(this, OvalDrawerActivity.class);
         resultIntent.putExtra("connectionID", connectionInfo.getConnectionID());
         PendingIntent resultPendingIntent;
 

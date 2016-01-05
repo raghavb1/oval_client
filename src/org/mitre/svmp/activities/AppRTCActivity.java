@@ -55,9 +55,12 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.*;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import org.json.JSONObject;
@@ -98,6 +101,8 @@ public class AppRTCActivity extends Activity implements StateObserver, MessageHa
 
 	protected ImageView appLoadingImgVw;
 	protected TextView preparingTextView;
+	 ProgressBar vsvProgrssBar;
+	Spinner qualitySpinner;
 	
 	LinearLayout ll;
 	@Override
@@ -107,6 +112,19 @@ public class AppRTCActivity extends Activity implements StateObserver, MessageHa
 		setContentView(R.layout.activity_apprtc);
 		getWindow().getDecorView().setBackgroundColor(Color.WHITE);
 		
+		
+		vsvProgrssBar=(ProgressBar) findViewById(R.id.vsvProgrssBar);
+		
+		
+		qualitySpinner=(Spinner) findViewById(R.id.qualitySpinner);
+		
+				
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+		        	R.array.video_qualities, android.R.layout.simple_spinner_item);
+		
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		
+		qualitySpinner.setAdapter(adapter);
 		
 		 ll= (LinearLayout)findViewById(R.id.vsvLinear);
 		preparingTextView = (TextView) findViewById(R.id.preparingTextView);

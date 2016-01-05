@@ -47,9 +47,11 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.oval.app.fragments.OvalDrawerActivity;
 import com.oval.app.network.CustomSSLSocketFactory;
 import com.oval.app.vo.LoginRequestVO;
 import com.oval.app.vo.LoginResultVO;
+import com.oval.app.vo.PersonInfoVo;
 import com.oval.app.vo.RegisterRequestVO;
 import com.oval.app.vo.RegisterResultVO;
 
@@ -78,14 +80,15 @@ public class OvalLoginActivity extends SvmpActivity
 	public static final String REGISTER_URL = "/auth/signup";
 	public static final String LOGIN_URL = "/auth/signin";
 	public static final String SEARCH_URL = "http://search.voga360.com/api/search.htm";
+	
 
 	public static final int STATUS_REGISTERED = 1; // UNAPPROVED
 	public static final int STATUS_APPROVED = 2;
 	public static final int STATUS_LOGGEDIN = 3;
-	public static final int STATUS_APPSREFRESHED=4;
+	public static final int STATUS_APPSREFRESHED = 4;
 
-	
 	ConnectionInfo connectionInfo;
+
 	private int sendRequestCode;
 
 	public ProgressDialog pDialog;
@@ -93,9 +96,7 @@ public class OvalLoginActivity extends SvmpActivity
 	// Google client to interact with Google API
 	private GoogleApiClient mGoogleApiClient;
 
-	String personName;
-	String email;
-
+	PersonInfoVo personInfoVo;
 	/**
 	 * A flag indicating that a PendingIntent is in progress and prevents us
 	 * from starting further intents.
@@ -124,9 +125,8 @@ public class OvalLoginActivity extends SvmpActivity
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState, R.layout.activity_login);
-		
-	
 
+		personInfoVo = new PersonInfoVo();
 		btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
 
 		pDialog = new ProgressDialog(this);
@@ -226,7 +226,7 @@ public class OvalLoginActivity extends SvmpActivity
 
 					super.onActivityResult(requestCode, RESULT_REPOPULATE, intent);
 
-					Intent i = new Intent(OvalLoginActivity.this, OvalSearchActivity.class);
+					Intent i = new Intent(OvalLoginActivity.this, OvalDrawerActivity.class);
 					i.putExtra("connectionID", 0);
 					startActivity(i);
 					finish();
@@ -277,8 +277,8 @@ public class OvalLoginActivity extends SvmpActivity
 
 	public void doRegistration() {
 		registerRequestVo.setDevice_type("1234");
-		registerRequestVo.setEmail(email);
-		registerRequestVo.setUsername(email);
+		registerRequestVo.setEmail(personInfoVo.getEmailId());
+		registerRequestVo.setUsername(personInfoVo.getEmailId());
 		registerRequestVo.setPassword("Hash33##");
 
 		new RegistrationAsyncTask().execute(getString(R.string.api_end_point) + REGISTER_URL,
@@ -377,7 +377,7 @@ public class OvalLoginActivity extends SvmpActivity
 	}
 
 	private void doLogin() {
-		loginRequestVo.setUsername(email);
+		loginRequestVo.setUsername(personInfoVo.getEmailId());
 		loginRequestVo.setPassword("Hash33##");
 
 		new LoginAsyncTask().execute(getString(R.string.api_end_point) + LOGIN_URL, gson.toJson(loginRequestVo));
@@ -480,28 +480,23 @@ public class OvalLoginActivity extends SvmpActivity
 		String status = loginResultVo.getApproved();
 
 		if (isSignedIn) {
-			
+
 			if (status.equalsIgnoreCase("true")) {
-				connectionInfo = new ConnectionInfo(1, "New Connection", email, "oval.co.in", 3000, 1, 1, "", 0,
-						OvalLoginActivity.STATUS_LOGGEDIN);
+				connectionInfo = new ConnectionInfo(1, "New Connection", personInfoVo.getEmailId(), "oval.co.in", 3000,
+						1, 1, "", 0, OvalLoginActivity.STATUS_LOGGEDIN, personInfoVo.getName(),
+						personInfoVo.getPhotoUrl(), personInfoVo.getProfileUrl());
 				long result;
 
 				result = dbHandler.insertConnectionInfo(connectionInfo);
 				if (result > -1) {
-					/*
-					 * Intent i = new Intent(OvalLoginActivity.this,
-					 * ConnectionList.class); i.setAction(ACTION_LAUNCH_APP);
-					 */
-		
+
 					refreshApps(connectionInfo);
-					/*Intent i = new Intent(OvalLoginActivity.this, OvalSearchActivity.class);
-					i.putExtra("connectionID", 0);
-					startActivity(i);
-					finish();*/
+
 				}
 			} else {
-				connectionInfo = new ConnectionInfo(0, "New Connection", email, "oval.co.in", 3000, 1, 1, "", 0,
-						OvalLoginActivity.STATUS_REGISTERED);
+				connectionInfo = new ConnectionInfo(1, "New Connection", personInfoVo.getEmailId(), "oval.co.in", 3000,
+						1, 1, "", 0, OvalLoginActivity.STATUS_REGISTERED, personInfoVo.getName(),
+						personInfoVo.getPhotoUrl(), personInfoVo.getProfileUrl());
 				long result;
 
 				result = dbHandler.insertConnectionInfo(connectionInfo);
@@ -513,20 +508,7 @@ public class OvalLoginActivity extends SvmpActivity
 				}
 			}
 
-			// enrytpion type and auth type to one and certificate to a
-			// blank string
-			// update id gives connection id that is zero in this case
-
-			// insert or update the ConnectionInfo in the database
-
-			/*
-			 * if (.equalsIgnoreCase("true")) {
-			 * 
-			 * 
-			 * } else {
-			 * 
-			 * }
-			 */
+		
 
 		} else {
 			Intent i = new Intent(OvalLoginActivity.this, OvalSearchActivity.class);
@@ -564,7 +546,7 @@ public class OvalLoginActivity extends SvmpActivity
 
 		// start the AppRTCActivity
 		startActivityForResult(intent, this.sendRequestCode);
-		
+
 	}
 
 	/**
@@ -574,13 +556,16 @@ public class OvalLoginActivity extends SvmpActivity
 		try {
 			if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
 				Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-				personName = currentPerson.getDisplayName();
-				String personPhotoUrl = currentPerson.getImage().getUrl();
-				String personGooglePlusProfile = currentPerson.getUrl();
-				email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+				personInfoVo.setName(currentPerson.getDisplayName());
+				personInfoVo.setPhotoUrl(currentPerson.getImage().getUrl());
+				personInfoVo.setProfileUrl(currentPerson.getUrl());
+				personInfoVo.setEmailId(Plus.AccountApi.getAccountName(mGoogleApiClient));
 
-				Log.e(TAG, "Name: " + personName + ", plusProfile: " + personGooglePlusProfile + ", email: " + email
-						+ ", Image: " + personPhotoUrl);
+				/*
+				 * Log.e(TAG, "Name: " + personName + ", plusProfile: " +
+				 * personGooglePlusProfile + ", email: " + email + ", Image: " +
+				 * personPhotoUrl);
+				 */
 
 			} else {
 				Toast.makeText(getApplicationContext(), "Person information is null", Toast.LENGTH_LONG).show();

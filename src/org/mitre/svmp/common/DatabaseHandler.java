@@ -77,7 +77,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             {"SessionHost", "TEXT DEFAULT ''"},
             {"SessionPort", "TEXT DEFAULT ''"},
             {"SessionWebrtc", "TEXT DEFAULT ''"},
-            {"Status", "INTEGER DEFAULT 0"}
+            {"Status", "INTEGER DEFAULT 0"},
+            {"Name", "TEXT"},
+            {"PhotoUrl", "TEXT"},
+            {"ProfileUrl", "TEXT"}
         }, {
             {"StartDate", "INTEGER", "PRIMARY KEY"},
             {"ConnectionID", "INTEGER"}, // foreign key
@@ -103,7 +106,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             {"Favorite", "BOOLEAN"},
             {"Icon", "BLOB"},
             {"IconHash", "BLOB"},
-            {"isInstalled", "INTEGER DEFAULT 1"}
+            {"isInstalled", "INTEGER DEFAULT 1"},
+            {"IconUrl", "TEXT"},
+            {"IsUsed", "INTEGER DEFAULT 0"}
         },{
      	   {"SearchString", "TEXT", "PRIMARY KEY"}
      }
@@ -360,7 +365,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 getDb(),
                 new String[]{"ConnectionID", "Description", "Username", "Host", "Port", "EncryptionType",
                         "AuthType", "CertificateAlias",
-                        "COUNT(PackageName)","Status"}, // columns (null == "*")
+                        "COUNT(PackageName)","Status","Name", "PhotoUrl", "ProfileUrl"}, // columns (null == "*")
                 selection, // selection ('where' clause)
                 selectionArgs, // selection args
                 "ConnectionID", // group by
@@ -517,6 +522,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<AppInfo> getAppInfoList_Favorites(int connectionID) {
         return getAppInfoList("ConnectionID=? AND Favorite=1", String.valueOf(connectionID));
     }
+    
+    public List<AppInfo> getAppInfoList_areUsed(int connectionID) {
+        return getAppInfoList("ConnectionID=? AND IsUsed=1", String.valueOf(connectionID));
+    }
+
 
     // returns a list of apps for a given ConnectionID, ordered by AppName
     private List<AppInfo> getAppInfoList(String selection, String... selectionArgs) {
@@ -601,9 +611,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             String certificateAlias = cursor.getString(7);
             int appCount = cursor.getInt(8);
             int status= cursor.getInt(9);
+            String name= cursor.getString(10);
+            String photoUrl=cursor.getString(11);
+            String profileUrl=cursor.getString(12);
 
             return new ConnectionInfo(connectionID, description, username, host, port, encryptionType,
-                    authType, certificateAlias, appCount, status);
+                    authType, certificateAlias, appCount, status, name,photoUrl,profileUrl);
         } catch( Exception e ) {
             e.printStackTrace();
             return null;
@@ -694,8 +707,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 iconHash = cursor.getBlob(5);
             
             int isInstalled = cursor.getInt(6);
+            String iconUrl=cursor.getString(7);
+            int isUsed=cursor.getInt(8);
 
-            return new AppInfo(connectionID, packageName, appName, favorite, icon, iconHash, isInstalled);
+            return new AppInfo(connectionID, packageName, appName, favorite, icon, iconHash, isInstalled,iconUrl,isUsed);
         } catch( Exception e ) {
             e.printStackTrace();
             return null;
@@ -863,6 +878,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             contentValues.put("AuthType", connectionInfo.getAuthType());
             contentValues.put("CertificateAlias", connectionInfo.getCertificateAlias());
             contentValues.put("Status", connectionInfo.getStatus());
+            contentValues.put("Name", connectionInfo.getName());
+            contentValues.put("PhotoUrl", connectionInfo.getPhotoUrl());
+            contentValues.put("ProfileUrl", connectionInfo.getProfileUrl());
         }
 
         return contentValues;
@@ -877,6 +895,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             contentValues.put("AppName", appInfo.getAppName());
             contentValues.put("Favorite", appInfo.isFavorite());
             contentValues.put("isInstalled", appInfo.getIsInstalled());
+            contentValues.put("IconUrl", appInfo.getIconUrl());
+            contentValues.put("IsUsed", appInfo.getIsUsed());
+            
+            
+            
+            
+          
             byte[] icon = appInfo.getIcon();
             if (icon != null)
                 contentValues.put("Icon", icon);

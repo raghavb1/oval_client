@@ -69,7 +69,6 @@ public class SDPObserver implements SdpObserver {
                 activity.logAndToast(R.string.appRTC_toast_sdpObserver_sendOffer);
                 SessionDescription sdp = new SessionDescription(
                         origSdp.type, AppRTCHelper.preferISAC(origSdp.description));
-
                 activity.getPCObserver().getPC().setLocalDescription(parent, sdp);
             }
         }).start();
@@ -79,17 +78,16 @@ public class SDPObserver implements SdpObserver {
     // other participant.
     private void sendLocalDescription(PeerConnection pc) {
         SessionDescription sdp = pc.getLocalDescription();
-        //logAndToast("Sending " + sdp.type);
         JSONObject json = new JSONObject();
         AppRTCHelper.jsonPut(json, "type", sdp.type.canonicalForm());
         AppRTCHelper.jsonPut(json, "sdp", sdp.description);
         activity.sendMessage(AppRTCHelper.makeWebRTCRequest(json));
     }
 
-    @Override public void onSetSuccess() {
-        activity.runOnUiThread(new Runnable() {
-            public void run() {
-                PCObserver pcObserver = activity.getPCObserver();
+    @Override public void onSetSuccess() { 
+    	activity.runOnUiThread(new Runnable() {
+        public void run() {
+            PCObserver pcObserver = activity.getPCObserver();
                 //if (activity.isInitiator()) {
                     if (pcObserver.getPC().getRemoteDescription() != null) {
                         // We've set our local offer and received & set the remote
@@ -100,8 +98,8 @@ public class SDPObserver implements SdpObserver {
                         sendLocalDescription(pcObserver.getPC());
                     }
                 //}
-/* we are always the initiator, no need for this condition
-                else {
+                    	/* we are always the initiator, no need for this condition
+                	else {
                     if (pcObserver.getPC().getLocalDescription() == null) {
                         // We just set the remote offer, time to create our answer.
                         //logAndToast("Creating answer");
@@ -114,9 +112,9 @@ public class SDPObserver implements SdpObserver {
                     }
                 }
 */
-            }
-        });
-    }
+//              sendLocalDescription(pcObserver.getPC());
+        }
+    });}
 
     @Override
     public void onCreateFailure(final String error) {

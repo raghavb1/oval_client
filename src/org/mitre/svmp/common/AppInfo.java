@@ -30,6 +30,30 @@ public class AppInfo {
 	private String appName;
 	private boolean favorite;
 	private byte[] icon;
+	
+	private String iconUrl;
+	private int isUsed;
+	
+	
+
+
+	public int getIsUsed() {
+		return isUsed;
+	}
+
+	public void setIsUsed(int isUsed) {
+		this.isUsed = isUsed;
+	}
+
+	public String getIconUrl() {
+		return iconUrl;
+	}
+
+	public void setIconUrl(String iconUrl) {
+		this.iconUrl = iconUrl;
+	}
+
+	
 
 	public int getIsInstalled() {
 		if(isInstalled!=null)
@@ -58,7 +82,7 @@ public class AppInfo {
 	}
 
 	public AppInfo(int connectionID, String packageName, String appName, boolean favorite, byte[] icon, byte[] iconHash,
-			int isInstalled) {
+			int isInstalled, String iconUrl, int isUsed) {
 		this.connectionID = connectionID;
 		this.packageName = packageName;
 		this.appName = appName;
@@ -66,6 +90,8 @@ public class AppInfo {
 		this.icon = icon;
 		this.iconHash = iconHash;
 		this.isInstalled = isInstalled;
+		this.iconUrl= iconUrl;
+		this.isUsed=isUsed;
 	}
 
 	public int getConnectionID() {

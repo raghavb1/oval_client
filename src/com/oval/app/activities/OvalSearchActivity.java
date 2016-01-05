@@ -72,6 +72,8 @@ public class OvalSearchActivity extends SvmpActivity {
 	ProgressDialog pDialog;
 	ListView searchResultListView;
 	Button tempSearchBtn;
+	
+	
 
 	Gson gson = new Gson();
 	RawSearchResultVO rawSearchResultVO;
@@ -346,8 +348,8 @@ public class OvalSearchActivity extends SvmpActivity {
 		// TODO Auto-generated method stub
 		if (rawSearchResultVO != null) {
 			if (rawSearchResultVO.getData() != null) {
-				SearchListAdapter adapter = new SearchListAdapter(this, rawSearchResultVO.getData().getSearchList());
-				searchResultListView.setAdapter(adapter);
+			/*	SearchListAdapter adapter = new SearchListAdapter(this, rawSearchResultVO.getData().getSearchList());
+				searchResultListView.setAdapter(adapter);*/
 			}
 		}
 

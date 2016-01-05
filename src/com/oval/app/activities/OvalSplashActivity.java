@@ -2,6 +2,8 @@ package com.oval.app.activities;
 
 import org.mitre.svmp.activities.SvmpActivity;
 import com.citicrowd.oval.R;
+import com.oval.app.fragments.OvalDrawerActivity;
+
 import org.mitre.svmp.common.ConnectionInfo;
 
 import android.content.Intent;
@@ -29,7 +31,7 @@ public class OvalSplashActivity extends SvmpActivity {
 				i = new Intent(OvalSplashActivity.this, OvalLoginActivity.class);
 
 			} else if (connectionInfo.getStatus() == OvalLoginActivity.STATUS_LOGGEDIN) {
-				i = new Intent(OvalSplashActivity.this, OvalSearchActivity.class);
+				i = new Intent(OvalSplashActivity.this, OvalDrawerActivity.class);
 				i.putExtra("connectionID", 0);
 
 			} else if (connectionInfo.getStatus() == OvalLoginActivity.STATUS_REGISTERED) {

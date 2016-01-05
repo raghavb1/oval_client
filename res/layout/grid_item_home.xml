@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="5dp"
+    android:paddingLeft="5dp"
+    android:paddingTop="5dp" >
+
+    <!--
+         <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/card_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="2dp" >
+    -->
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
+
+        <ImageView
+            android:id="@+id/appIconImageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentTop="true" />
+
+        <TextView
+            android:id="@+id/appName"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/appIconImageView"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:text="SVMP App"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/appRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/appName"
+            android:text="3"
+            android:textSize="12sp"
+            android:visibility="gone" >
+        </TextView>
+    </RelativeLayout>
+    <!-- </android.support.v7.widget.CardView> -->
+
+</LinearLayout>

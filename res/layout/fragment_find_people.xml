@@ -2,21 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center" >
-
-    <ListView
-        android:id="@+id/searchResultListView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/searchbox"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        android:scrollbars="vertical" 
-       />
+    android:gravity="top" >
 
     <com.quinny898.library.persistentsearch.SearchBox
         android:id="@+id/searchbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <GridView
+        android:id="@+id/gridView1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/searchbox"
+        android:columnWidth="100dp"
+        android:gravity="center"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth" >
+    </GridView>
 
 </RelativeLayout>

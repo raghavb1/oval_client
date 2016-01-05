@@ -12,41 +12,61 @@
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
-  limitations under the License.
+  limitations under the License.
 -->
 <resources>
+
+    <string-array name="nav_drawer_items">
+        <item>Refresh Apps</item>
+        <item>Settings</item>
+    </string-array>
+
+    <!-- Nav Drawer List Item Icons -->
+    <!-- Keep them in order as the titles are in -->
+    <array name="nav_drawer_icons">
+        <item>@drawable/svmp_app_icon</item>
+        <item>@drawable/svmp_app_icon</item>
+    </array>
+
+    <!-- Content Description -->
+    <string name="desc_list_item_icon">Item Icon</string>
 
     <!-- Resources Added by Abhishek Aggarwal -->
     <string name="api_end_point">https://oval.co.in:3000</string>
     <string name="text_account_approval">Waiting for Account approval</string>
     <string name="services_prefix_url">http://download.mobogarden.com/</string>
+    <string name="services_prefix_url_aptoide">http://52.27.68.118:10080/OvalSearch/applications/getApplications</string>
     <string name="oval_app_services_pkgname">com.example.androidhive</string>
     <string name="edit_text_hint_search">Search</string>
-    
-    
-    
-    
+    <string name="aptoide_icon_path">http://pool.img.aptoide.com/apps/</string>
+    <string name="aptoide_apk_path">http://pool.apk.aptoide.com/apps/</string>
+    <string name="fetch_app_icon_url">http://52.27.68.118:10080/OvalSearch/applications/getAppData</string>
+
+    <string-array name="video_qualities">
+        <item>Auto</item>
+        <item>LQ</item>
+        <item>HQ</item>
+    </string-array>
+
     <!-- Navigation Drawer -->
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
- 
     <string name="nav_item_home">Home</string>
     <string name="nav_item_friends">Friends</string>
     <string name="nav_item_notifications">Messages</string>
- 
-    <!-- navigation drawer item labels  -->
+
+    <!-- navigation drawer item labels -->
     <string-array name="nav_drawer_labels">
         <item>@string/nav_item_home</item>
         <item>@string/nav_item_friends</item>
         <item>@string/nav_item_notifications</item>
     </string-array>
- 
+
     <string name="title_messages">Messages</string>
     <string name="title_friends">Friends</string>
     <string name="title_home">Home</string>
-
 
     <!-- Till here -->
     <string name="app_name">OVAL</string>

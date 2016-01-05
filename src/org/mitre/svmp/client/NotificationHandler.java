@@ -18,6 +18,8 @@ package org.mitre.svmp.client;
 import android.app.TaskStackBuilder;
 import android.os.Build;
 import com.citicrowd.oval.R;
+import com.oval.app.activities.OvalSearchActivity;
+
 import org.mitre.svmp.activities.ConnectionList;
 import org.mitre.svmp.protocol.SVMPProtocol;
 
@@ -63,7 +65,7 @@ public class NotificationHandler {
         Notification.Builder notice = new Notification.Builder(context)
             .setContentTitle(notification.getContentTitle())
             .setContentText(notification.getContentText())
-            .setSmallIcon(R.drawable.svmp_app_icon) // no way to set a dynamic small icon!
+            .setSmallIcon(R.drawable.ovalnew) // no way to set a dynamic small icon!
             .setContentIntent(resultPendingIntent);
         // if we have a large icon (optional), set it; otherwise use the small icon (required)
         if (notification.hasLargeIcon()) {

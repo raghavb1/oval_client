@@ -11,9 +11,10 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:id="@+id/splashIcon"
-       android:src="@drawable/oval"
+       android:src="@drawable/ovalnew"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        />
     
     <ProgressBar android:layout_width="wrap_content"
         android:layout_height="wrap_content"

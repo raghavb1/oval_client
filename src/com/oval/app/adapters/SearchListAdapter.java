@@ -9,6 +9,7 @@ import org.mitre.svmp.common.Constants;
 import org.mitre.svmp.common.DatabaseHandler;
 
 import com.citicrowd.oval.R;
+import com.oval.app.vo.AptoideSearchResultItemVo;
 import com.oval.app.vo.SearchResultItemVO;
 import com.squareup.picasso.Picasso;
 
@@ -28,10 +29,10 @@ public class SearchListAdapter extends BaseAdapter {
 
 	private Activity activity;
 	private LayoutInflater inflater;
-	private List<SearchResultItemVO> items;
+	private List<AptoideSearchResultItemVo> items;
 	private DatabaseHandler dbHandler;
 
-	public SearchListAdapter(Activity activity, List<SearchResultItemVO> items) {
+	public SearchListAdapter(Activity activity, List<AptoideSearchResultItemVo> items) {
 		// TODO Auto-generated constructor stub
 
 		this.activity = activity;
@@ -80,50 +81,49 @@ public class SearchListAdapter extends BaseAdapter {
 				// TODO Auto-generated method stub
 
 				if (items != null) {
-					SearchResultItemVO searchItem = items.get(finalPosition);
+					AptoideSearchResultItemVo searchItem = items.get(finalPosition);
 					if (searchItem != null) {
 						Intent i = new Intent(activity, ConnectionList.class);
 						i.setAction(Constants.ACTION_LAUNCH_APP);
-						// Intent i = new Intent(OvalLoginActivity.this,
-						// OvalSearchActivity.class);
 						i.putExtra("connectionID", 1);
 
-						if (dbHandler.getAppInfo(1, searchItem.getApkId()) != null) {
-							i.putExtra("pkgName", searchItem.getApkId());
-							activity.startActivity(i);
-						} else {
-							// i.putExtra("pkgName",
-							// activity.getString(R.string.oval_app_services_pkgname));
-							//
-							// i.putExtra("apkPath",
-							// activity.getString(R.string.services_prefix_url)
-							// + searchItem.getApkPath());
+						AppInfo appInfoTemp = dbHandler.getAppInfo(1, searchItem.getApkid());
 
-							AppInfo appinfo = new AppInfo(1, searchItem.getApkId(), searchItem.getBasename(), false,
-									null, null, 0);
+						if (appInfoTemp != null) {
+
+							if (appInfoTemp.getIsUsed() == 0) {
+								appInfoTemp.setIsUsed(1);
+								long result = dbHandler.updateAppInfo(appInfoTemp);
+								if (result > -1) {
+									i.putExtra("pkgName", searchItem.getApkid());
+									activity.startActivity(i);
+								}
+							} else {
+								i.putExtra("pkgName", searchItem.getApkid());
+								activity.startActivity(i);
+							}
+						} else {
+
+							String iconPath = searchItem.getIconHd();
+							if (iconPath == null || iconPath.isEmpty() || iconPath.equals("null")) {
+								iconPath = searchItem.getIcon();
+							}
+
+							AppInfo appinfo = new AppInfo(1, searchItem.getApkid(), searchItem.getName(), false, null,
+									null, 0, iconPath, 1);
 							long result = dbHandler.insertAppInfo(appinfo);
 
-							
 							if (result > -1) {
-							/*	Intent intent = new Intent(activity, SendNetIntent.class);
-								Uri.Builder builder = new Uri.Builder();
-								builder.scheme("http").authority("oval.co.in");
-								builder.appendQueryParameter("type", "downloadAndInstall");
-								builder.appendQueryParameter("url",
-										activity.getString(R.string.services_prefix_url) + searchItem.getApkPath());
-								intent.setData(builder.build());
-								activity.startActivity(intent);*/
-								
-								
+
 								Intent intent = new Intent(activity, ConnectionList.class);
 								intent.setAction(Constants.ACTION_LAUNCH_APP);
-								intent.putExtra("pkgName", searchItem.getApkId());
+								intent.putExtra("pkgName", searchItem.getApkid());
 								intent.putExtra("connectionID", 1);
 								Uri.Builder builder = new Uri.Builder();
 								builder.scheme("http").authority("oval.co.in");
 								builder.appendQueryParameter("type", "downloadAndInstall");
 								builder.appendQueryParameter("url",
-										activity.getString(R.string.services_prefix_url) + searchItem.getApkPath());
+										activity.getString(R.string.aptoide_apk_path) + searchItem.getPath());
 								intent.setData(builder.build());
 								activity.startActivity(intent);
 							}
@@ -136,15 +136,13 @@ public class SearchListAdapter extends BaseAdapter {
 		});
 
 		if (items != null) {
-			SearchResultItemVO searchItem = items.get(position);
+			AptoideSearchResultItemVo searchItem = items.get(position);
 
 			if (searchItem != null) {
-				holder.appCategoryTextView.setText(searchItem.getTypeName());
-				holder.appNameTextView.setText(searchItem.getBasename());
-				Picasso.with(activity)
-						.load(activity.getString(R.string.services_prefix_url) + searchItem.getIconPath()
-								+ searchItem.getLargeIcon())
-						.placeholder(R.drawable.ic_launcher)
+				holder.appCategoryTextView.setText(searchItem.getCategory());
+				holder.appNameTextView.setText(searchItem.getName());
+				Picasso.with(activity).load(activity.getString(R.string.aptoide_icon_path) + searchItem.getIconHd())
+
 						.into(holder.appIconImageView);
 			}
 		}

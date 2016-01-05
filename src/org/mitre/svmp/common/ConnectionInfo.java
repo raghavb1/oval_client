@@ -32,6 +32,13 @@ public class ConnectionInfo implements Constants {
 	private String certificateAlias;
 	private int appCount;
 	private int status;
+	
+	private String name;
+	private String photoUrl;
+	private String profileUrl;
+	
+	
+	
 
 	// constructor
 	public ConnectionInfo(int connectionID, String description, String username, String host, int port,
@@ -59,6 +66,52 @@ public class ConnectionInfo implements Constants {
 		this.certificateAlias = certificateAlias;
 		this.appCount = appCount;
 		this.status=status;
+	}
+	
+	
+	
+
+	public ConnectionInfo(int connectionID, String description, String username, String host, int port,
+			int encryptionType, int authType, String certificateAlias, int appCount, int status, String name,
+			String photoUrl, String profileUrl) {
+		super();
+		this.connectionID = connectionID;
+		this.description = description;
+		this.username = username;
+		this.host = host;
+		this.port = port;
+		this.encryptionType = encryptionType;
+		this.authType = authType;
+		this.certificateAlias = certificateAlias;
+		this.appCount = appCount;
+		this.status = status;
+		this.name = name;
+		this.photoUrl = photoUrl;
+		this.profileUrl = profileUrl;
+	}
+
+	public String getProfileUrl() {
+		return profileUrl;
+	}
+
+	public void setProfileUrl(String profileUrl) {
+		this.profileUrl = profileUrl;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPhotoUrl() {
+		return photoUrl;
+	}
+
+	public void setPhotoUrl(String photoUrl) {
+		this.photoUrl = photoUrl;
 	}
 
 	public int getStatus() {
