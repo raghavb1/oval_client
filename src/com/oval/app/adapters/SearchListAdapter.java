@@ -1,6 +1,7 @@
 package com.oval.app.adapters;
 
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.mitre.svmp.activities.ConnectionList;
 import org.mitre.svmp.client.SendNetIntent;
@@ -71,69 +72,10 @@ public class SearchListAdapter extends BaseAdapter {
 		holder.appNameTextView = (TextView) convertView.findViewById(R.id.appNameTextView);
 		holder.appCategoryTextView = (TextView) convertView.findViewById(R.id.appCategoryTextView);
 		holder.appIconImageView = (ImageView) convertView.findViewById(R.id.appIconImageView);
-		holder.openOrInstallBtn = (Button) convertView.findViewById(R.id.openOrInstallBtn);
-		final int finalPosition = position;
+	
+		
 
-		holder.openOrInstallBtn.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-
-				if (items != null) {
-					AptoideSearchResultItemVo searchItem = items.get(finalPosition);
-					if (searchItem != null) {
-						Intent i = new Intent(activity, ConnectionList.class);
-						i.setAction(Constants.ACTION_LAUNCH_APP);
-						i.putExtra("connectionID", 1);
-
-						AppInfo appInfoTemp = dbHandler.getAppInfo(1, searchItem.getApkid());
-
-						if (appInfoTemp != null) {
-
-							if (appInfoTemp.getIsUsed() == 0) {
-								appInfoTemp.setIsUsed(1);
-								long result = dbHandler.updateAppInfo(appInfoTemp);
-								if (result > -1) {
-									i.putExtra("pkgName", searchItem.getApkid());
-									activity.startActivity(i);
-								}
-							} else {
-								i.putExtra("pkgName", searchItem.getApkid());
-								activity.startActivity(i);
-							}
-						} else {
-
-							String iconPath = searchItem.getIconHd();
-							if (iconPath == null || iconPath.isEmpty() || iconPath.equals("null")) {
-								iconPath = searchItem.getIcon();
-							}
-
-							AppInfo appinfo = new AppInfo(1, searchItem.getApkid(), searchItem.getName(), false, null,
-									null, 0, iconPath, 1);
-							long result = dbHandler.insertAppInfo(appinfo);
-
-							if (result > -1) {
-
-								Intent intent = new Intent(activity, ConnectionList.class);
-								intent.setAction(Constants.ACTION_LAUNCH_APP);
-								intent.putExtra("pkgName", searchItem.getApkid());
-								intent.putExtra("connectionID", 1);
-								Uri.Builder builder = new Uri.Builder();
-								builder.scheme("http").authority("oval.co.in");
-								builder.appendQueryParameter("type", "downloadAndInstall");
-								builder.appendQueryParameter("url",
-										activity.getString(R.string.aptoide_apk_path) + searchItem.getPath());
-								intent.setData(builder.build());
-								activity.startActivity(intent);
-							}
-						}
-
-					}
-				}
-
-			}
-		});
+		
 
 		if (items != null) {
 			AptoideSearchResultItemVo searchItem = items.get(position);
@@ -141,7 +83,16 @@ public class SearchListAdapter extends BaseAdapter {
 			if (searchItem != null) {
 				holder.appCategoryTextView.setText(searchItem.getCategory());
 				holder.appNameTextView.setText(searchItem.getName());
-				Picasso.with(activity).load(activity.getString(R.string.aptoide_icon_path) + searchItem.getIconHd())
+				String icon = searchItem.getIconHd();
+
+				if (icon == null || icon.isEmpty() || icon.equals("null")) {
+
+					icon = searchItem.getIcon();
+
+				}
+				
+			
+				Picasso.with(activity).load(activity.getString(R.string.aptoide_icon_path) + icon)
 
 						.into(holder.appIconImageView);
 			}
@@ -153,7 +104,7 @@ public class SearchListAdapter extends BaseAdapter {
 		public ImageView appIconImageView;
 		public TextView appNameTextView;
 		public TextView appCategoryTextView;
-		public Button openOrInstallBtn;
+	
 	}
 
 }

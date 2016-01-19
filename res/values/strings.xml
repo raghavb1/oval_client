@@ -17,6 +17,7 @@
 <resources>
 
     <string-array name="nav_drawer_items">
+        <item>Home</item>
         <item>Refresh Apps</item>
         <item>Settings</item>
     </string-array>
@@ -26,6 +27,7 @@
     <array name="nav_drawer_icons">
         <item>@drawable/svmp_app_icon</item>
         <item>@drawable/svmp_app_icon</item>
+          <item>@drawable/svmp_app_icon</item>
     </array>
 
     <!-- Content Description -->
@@ -41,6 +43,7 @@
     <string name="aptoide_icon_path">http://pool.img.aptoide.com/apps/</string>
     <string name="aptoide_apk_path">http://pool.apk.aptoide.com/apps/</string>
     <string name="fetch_app_icon_url">http://52.27.68.118:10080/OvalSearch/applications/getAppData</string>
+    <string name="assign_vm_url">http://oval.co.in/oval/users/assignVM/</string>
 
     <string-array name="video_qualities">
         <item>Auto</item>

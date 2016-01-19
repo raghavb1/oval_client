@@ -58,6 +58,7 @@ import android.graphics.Paint.Style;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.support.v4.content.IntentCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.*;
@@ -91,6 +92,7 @@ import org.mitre.svmp.protocol.SVMPProtocol.Request.RequestType;
 import org.webrtc.*;
 import com.citicrowd.oval.R;
 import com.google.android.gms.drive.internal.RemoveEventListenerRequest;
+import com.oval.app.activities.OvalDrawerActivity;
 
 import java.util.HashMap;
 import java.util.TimeZone;
@@ -263,7 +265,22 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 			}
 		});
 
+		ImageView homeStreamingBtn = (ImageView) findViewById(R.id.homeStreamingBtn);
+		homeStreamingBtn.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+
+				Intent intent = new Intent(AppRTCVideoActivity.this, OvalDrawerActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK);
+				startActivity(intent);
+				disconnectAndExit();
+
+			}
+		});
 		ImageView stopStreamingBtn = (ImageView) findViewById(R.id.stopStreamingBtn);
+
 		stopStreamingBtn.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -493,33 +510,6 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 		touchHandler.handleScreenInfoResponse(msg);
 	}
 
-	/*
-	 * @Override public boolean onTouchEvent(MotionEvent event) {
-	 * 
-	 * // mDetector.onTouchEvent(event);
-	 * 
-	 * if (event.getAction() == MotionEvent.ACTION_MOVE) { Log.d(TAG,
-	 * "Action was MOVE");
-	 * 
-	 * Vibrator vb = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-	 * vb.vibrate(10);
-	 * 
-	 * } else { Vibrator vb = (Vibrator)
-	 * getSystemService(Context.VIBRATOR_SERVICE); vb.vibrate(50);
-	 * 
-	 * }
-	 * 
-	 * 
-	 * vsv.onPause(); Handler handler = new Handler(); handler.postDelayed(new
-	 * Runnable() {
-	 * 
-	 * @Override public void run() {
-	 * 
-	 * vsv.onResume(); } }, 2000);
-	 * 
-	 * return touchHandler.onTouchEvent(event); }
-	 */
-
 	private float mDownX;
 	private float mDownY;
 	private final float SCROLL_THRESHOLD = 10;
@@ -528,6 +518,8 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
+
+		Log.e(TAG, "inside activity on touch.");
 		Vibrator vb = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		switch (ev.getAction() & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_DOWN:
@@ -537,15 +529,13 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 			break;
 		case MotionEvent.ACTION_CANCEL:
 		case MotionEvent.ACTION_UP:
+
 			if (isOnClick) {
 				Log.i(TAG, "onClick ");
 
-				if (true) {
-					// pauseVsv();
-					vb.vibrate(50);
-					// return touchHandler.onTouchEvent(ev);
-
-				}
+				// pauseVsv();
+				vb.vibrate(50);
+				// return touchHandler.onTouchEvent(ev);
 
 				// TODO onClick code
 			}
@@ -556,20 +546,16 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 				Log.i(TAG, "movement detected");
 				isOnClick = false;
 
-				// if (true) {
-				// pauseVsv();
-				vb.vibrate(50);
-				// return touchHandler.onTouchEvent(ev);
-				//
-				// }
+				vsv.onPause();
 
 			}
 			break;
 		default:
+
 			break;
 		}
 		vsvProgrssBar.setVisibility(View.VISIBLE);
-		vsv.onPause();
+
 		Handler handler = new Handler();
 		handler.postDelayed(new Runnable() {
 
@@ -578,11 +564,12 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 				vsvProgrssBar.setVisibility(View.INVISIBLE);
 				vsv.onResume();
 			}
-		}, 2000);
+		}, 5000);
+
+		Log.e(TAG, "on activity touch is finishing");
 
 		return touchHandler.onTouchEvent(ev);
 
-		// return true;
 	}
 
 	Handler handler = new Handler();

@@ -33,9 +33,18 @@ public class AppInfo {
 	
 	private String iconUrl;
 	private int isUsed;
+	private String downloadUrl;
 	
 	
 
+
+	public String getDownloadUrl() {
+		return downloadUrl;
+	}
+
+	public void setDownloadUrl(String downloadUrl) {
+		this.downloadUrl = downloadUrl;
+	}
 
 	public int getIsUsed() {
 		return isUsed;
@@ -82,7 +91,7 @@ public class AppInfo {
 	}
 
 	public AppInfo(int connectionID, String packageName, String appName, boolean favorite, byte[] icon, byte[] iconHash,
-			int isInstalled, String iconUrl, int isUsed) {
+			int isInstalled, String iconUrl, int isUsed, String downloadUrl) {
 		this.connectionID = connectionID;
 		this.packageName = packageName;
 		this.appName = appName;
@@ -92,6 +101,7 @@ public class AppInfo {
 		this.isInstalled = isInstalled;
 		this.iconUrl= iconUrl;
 		this.isUsed=isUsed;
+		this.downloadUrl= downloadUrl;
 	}
 
 	public int getConnectionID() {

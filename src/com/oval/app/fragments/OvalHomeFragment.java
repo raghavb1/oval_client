@@ -3,13 +3,19 @@ package com.oval.app.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mitre.svmp.activities.ConnectionList;
 import org.mitre.svmp.common.AppInfo;
+import org.mitre.svmp.common.ConnectionInfo;
 import org.mitre.svmp.common.Constants;
 import org.mitre.svmp.common.DatabaseHandler;
 
 import com.citicrowd.oval.R;
+import com.oval.app.activities.OvalDrawerActivity;
 import com.oval.app.adapters.HomeGridAdapter;
+import com.oval.app.network.HTTPServiceHandler;
+import com.oval.util.ConnectionDetector;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 import com.quinny898.library.persistentsearch.SearchBox.MenuListener;
@@ -18,10 +24,15 @@ import com.quinny898.library.persistentsearch.SearchBox.VoiceRecognitionListener
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,17 +54,24 @@ public class OvalHomeFragment extends Fragment {
 	GridView gridView;
 	List<AppInfo> appsList;
 
+	ProgressDialog pDialog;
+	ConnectionInfo connectionInfo;
+
+	int pos;
+
 	public OvalHomeFragment() {
 	}
 
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		
-		
+
+		dbHandler = new DatabaseHandler(getActivity());
+		connectionInfo = dbHandler.getConnectionInfo(1);
+
 	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -65,25 +83,30 @@ public class OvalHomeFragment extends Fragment {
 		gridView = (GridView) rootView.findViewById(R.id.gridView1);
 
 		appsList = dbHandler.getAppInfoList_areUsed(1);
-		
+
 		HomeGridAdapter adapter = new HomeGridAdapter(context, appsList);
 
 		gridView.setAdapter(adapter);
 		adapter.notifyDataSetChanged();
-		
+
 		gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// TODO Auto-generated method stub
-				
-				Intent i = new Intent(context, ConnectionList.class);
-				i.setAction(Constants.ACTION_LAUNCH_APP);
-				i.putExtra("connectionID", 1);
-				
-				i.putExtra("pkgName", appsList.get(position).getPackageName());
-				startActivity(i);
-				
+
+				if (ConnectionDetector.isConnectingToInternet(context)) {
+
+					pos = position;
+
+					new AssignVMAsyncTask().execute();
+				} else {
+					Fragment fragment = new OvalNoInternetFragment();
+					FragmentManager fragmentManager = getFragmentManager();
+					fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).addToBackStack(OvalHomeFragment.TAG).commit();
+
+				}
+
 			}
 		});
 
@@ -180,7 +203,6 @@ public class OvalHomeFragment extends Fragment {
 		return rootView;
 	}
 
-
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 1234 && resultCode == Activity.RESULT_OK) {
@@ -199,5 +221,82 @@ public class OvalHomeFragment extends Fragment {
 
 		}
 		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	private class AssignVMAsyncTask extends AsyncTask<String, String, String> {
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+
+			super.onPreExecute();
+			pDialog = new ProgressDialog(context);
+			pDialog.setMessage("Please wait...");
+			pDialog.setCancelable(false);
+			pDialog.show();
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+
+			HTTPServiceHandler httpServiceHandler = new HTTPServiceHandler(context);
+
+			String jsonStr = httpServiceHandler.makeSecureServiceCall(
+					getResources().getString(R.string.assign_vm_url) + connectionInfo.getUsername(),
+					HTTPServiceHandler.GET, null);
+
+			Log.d(TAG, "Search Successful");
+			return jsonStr;
+
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			// TODO Auto-generated method stub
+
+			super.onPostExecute(result);
+
+			pDialog.dismiss();
+			try {
+				JSONObject jObj = new JSONObject(result);
+				String success = jObj.getString("success");
+				boolean isNew = jObj.getBoolean("new");
+				if (success.equals("true")) {
+					openApp(isNew);
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+
+	public void openApp(boolean isNew) {
+		// TODO Auto-generated method stub
+		AppInfo appinfo = appsList.get(pos);
+	/*	if (!isNew) {
+			Intent i = new Intent(context, ConnectionList.class);
+			i.setAction(Constants.ACTION_LAUNCH_APP);
+			i.putExtra("connectionID", 1);
+
+			i.putExtra("pkgName", appinfo.getPackageName());
+			startActivity(i);
+		} else {*/
+			Intent intent = new Intent(context, ConnectionList.class);
+			intent.setAction(Constants.ACTION_LAUNCH_APP);
+			intent.putExtra("pkgName", appinfo.getPackageName());
+			intent.putExtra("connectionID", 1);
+			Uri.Builder builder = new Uri.Builder();
+			builder.scheme("http").authority("oval.co.in");
+			builder.appendQueryParameter("type", "downloadAndInstall");
+			builder.appendQueryParameter("packageName", appinfo.getPackageName());
+			
+			builder.appendQueryParameter("url",
+					 appinfo.getDownloadUrl());
+			intent.setData(builder.build());
+			context.startActivity(intent);
+//		}
+
 	}
 }

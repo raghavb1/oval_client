@@ -65,7 +65,8 @@
                 android:background="@drawable/mybutton"
                 android:text="OPEN"
                 android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textStyle="bold" 
+                android:visibility="gone"/>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 

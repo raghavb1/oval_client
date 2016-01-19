@@ -26,6 +26,8 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mitre.svmp.activities.AppList;
 import org.mitre.svmp.activities.AppRTCRefreshAppsActivity;
 import org.mitre.svmp.activities.AppRTCVideoActivity;
@@ -47,8 +49,8 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.oval.app.fragments.OvalDrawerActivity;
 import com.oval.app.network.CustomSSLSocketFactory;
+import com.oval.app.network.HTTPServiceHandler;
 import com.oval.app.vo.LoginRequestVO;
 import com.oval.app.vo.LoginResultVO;
 import com.oval.app.vo.PersonInfoVo;
@@ -80,7 +82,6 @@ public class OvalLoginActivity extends SvmpActivity
 	public static final String REGISTER_URL = "/auth/signup";
 	public static final String LOGIN_URL = "/auth/signin";
 	public static final String SEARCH_URL = "http://search.voga360.com/api/search.htm";
-	
 
 	public static final int STATUS_REGISTERED = 1; // UNAPPROVED
 	public static final int STATUS_APPROVED = 2;
@@ -112,32 +113,32 @@ public class OvalLoginActivity extends SvmpActivity
 	LoginRequestVO loginRequestVo = new LoginRequestVO();
 	LoginResultVO loginResultVo = new LoginResultVO();
 
-	private SignInButton btnSignIn;
-	private Button btnSignOut, btnRevokeAccess;
-	private ImageView imgProfilePic;
-	private TextView txtName, txtEmail;
-	private LinearLayout llProfileLayout;
-
+	
 	Gson gson = new Gson();
 	// boolean alreadySignedIn = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
-		super.onCreate(savedInstanceState, R.layout.activity_login);
+		super.onCreate(savedInstanceState, R.layout.activity_splash);
 
 		personInfoVo = new PersonInfoVo();
-		btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
+		// btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
 
 		pDialog = new ProgressDialog(this);
 		pDialog.setMessage("Please wait...");
 		pDialog.setCancelable(false);
 
 		// Button click listeners
-		btnSignIn.setOnClickListener(this);
+		// btnSignIn.setOnClickListener(this);
+
+		mSignInClicked = true;
+
 		mGoogleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this)
 				.addOnConnectionFailedListener(this).addApi(Plus.API).addScope(new Scope(Scopes.PROFILE))
 				.addScope(new Scope(Scopes.EMAIL)).build();
+
+		
 	}
 
 	private void showpDialog() {
@@ -184,7 +185,7 @@ public class OvalLoginActivity extends SvmpActivity
 			return;
 		}
 
-		btnSignIn.setVisibility(View.VISIBLE);
+		// btnSignIn.setVisibility(View.VISIBLE);
 		// alreadySignedIn=false;
 
 		if (!mIntentInProgress) {
@@ -251,27 +252,45 @@ public class OvalLoginActivity extends SvmpActivity
 		mSignInClicked = false;
 		// Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
 
-		btnSignIn.setVisibility(View.INVISIBLE);
+		// btnSignIn.setVisibility(View.INVISIBLE);
 		// alreadySignedIn = true;
 
 		// Get user's information
-		getProfileInformation();
 
-		/*
-		 * if (dbHandler.getConnectionInfoList().size() == 0) {
-		 * doRegistration(); } else { ConnectionInfo connectionInfo =
-		 * dbHandler.getConnectionInfoList().get(0); if (connectionInfo == null)
-		 * { doRegistration(); } else if (connectionInfo.getStatus() ==
-		 * OvalLoginActivity.STATUS_LOGGEDIN) { updateUI(false); } else if
-		 * (connectionInfo.getStatus() == OvalLoginActivity.STATUS_REGISTERED) {
-		 * Intent i = new Intent(OvalLoginActivity.this,
-		 * OvalAccountApprovalActivity.class); i.putExtra("connectionID", 0);
-		 * startActivity(i); finish(); }
-		 * 
-		 * }
-		 */
+		Intent i;
 
-		doRegistration();
+		if (dbHandler.getConnectionInfoList().size() == 0) {
+			// i = new Intent(OvalLoginActivity.this, OvalLoginActivity.class);
+
+			getProfileInformation();
+
+			doRegistration();
+
+		} else {
+			ConnectionInfo connectionInfo = dbHandler.getConnectionInfoList().get(0);
+			if (connectionInfo == null) {
+				// i = new Intent(OvalLoginActivity.this,
+				// OvalLoginActivity.class);
+
+				getProfileInformation();
+
+				doRegistration();
+
+			} else if (connectionInfo.getStatus() == OvalLoginActivity.STATUS_LOGGEDIN) {
+				i = new Intent(OvalLoginActivity.this, OvalDrawerActivity.class);
+				i.putExtra("connectionID", 0);
+				startActivity(i);
+				finish();
+
+			} else if (connectionInfo.getStatus() == OvalLoginActivity.STATUS_REGISTERED) {
+				i = new Intent(OvalLoginActivity.this, OvalAccountApprovalActivity.class);
+				i.putExtra("connectionID", 0);
+				startActivity(i);
+				finish();
+
+			}
+
+		}
 
 	}
 
@@ -490,7 +509,8 @@ public class OvalLoginActivity extends SvmpActivity
 				result = dbHandler.insertConnectionInfo(connectionInfo);
 				if (result > -1) {
 
-					refreshApps(connectionInfo);
+					new AssignVMAsyncTask().execute();
+					// refreshApps(connectionInfo);
 
 				}
 			} else {
@@ -507,8 +527,6 @@ public class OvalLoginActivity extends SvmpActivity
 					finish();
 				}
 			}
-
-		
 
 		} else {
 			Intent i = new Intent(OvalLoginActivity.this, OvalSearchActivity.class);
@@ -599,6 +617,14 @@ public class OvalLoginActivity extends SvmpActivity
 		}
 	}
 
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+
+		signInWithGplus();
+	}
+
 	/**
 	 * Sign-in into google
 	 */
@@ -637,6 +663,58 @@ public class OvalLoginActivity extends SvmpActivity
 
 			});
 		}
+	}
+
+	private class AssignVMAsyncTask extends AsyncTask<String, String, String> {
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+
+			super.onPreExecute();
+			pDialog = new ProgressDialog(OvalLoginActivity.this);
+			pDialog.setMessage("Please wait...");
+			pDialog.setCancelable(false);
+			pDialog.show();
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+
+			HTTPServiceHandler httpServiceHandler = new HTTPServiceHandler(OvalLoginActivity.this);
+
+			String jsonStr = httpServiceHandler.makeSecureServiceCall(
+					getResources().getString(R.string.assign_vm_url) + connectionInfo.getUsername(),
+					HTTPServiceHandler.GET, null);
+
+			Log.d(TAG, "Search Successful");
+			return jsonStr;
+
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			// TODO Auto-generated method stub
+
+			super.onPostExecute(result);
+
+			pDialog.dismiss();
+			try {
+				JSONObject jObj = new JSONObject(result);
+				String success = jObj.getString("success");
+				if (success.equals("true")) {
+					// refreshApps(connectionInfo);
+					Intent i = new Intent(OvalLoginActivity.this, OvalDrawerActivity.class);
+					i.putExtra("connectionID", 0);
+					startActivity(i);
+					finish();
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
 	}
 
 }

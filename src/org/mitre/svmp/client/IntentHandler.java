@@ -26,6 +26,8 @@ import android.widget.Toast;
 import com.citicrowd.oval.R;
 import com.oval.app.activities.OvalAccountApprovalActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mitre.svmp.activities.AppList;
 import org.mitre.svmp.activities.AppRTCVideoActivity;
 import org.mitre.svmp.activities.ConnectionList;
@@ -59,74 +61,64 @@ public class IntentHandler {
 			}
 			break;
 		case ACTION_VIEW:
+			String jsonStr = intent.getData().toString();
+			JSONObject jObj = null;
+			String message = null;
+			try {
+				jObj = new JSONObject(jsonStr);
+				message = jObj.getString("message");
 
-			switch (intent.getData().toString()) {
-			case "keyboardStarted":
+				if (jObj != null && message != null) {
+					switch (message) {
+					case "keyboardStarted":
 
-				
-				
-				InputMethodManager imm = (InputMethodManager)   context.getSystemService(context.INPUT_METHOD_SERVICE);
-				imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-				break;
+						InputMethodManager imm = (InputMethodManager) context
+								.getSystemService(context.INPUT_METHOD_SERVICE);
+						imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+						break;
 
-			case "true":
+					case "appInstalled":
 
-				startApp(intent, context);
+						String success = jObj.getString("success");
+						String packageName = jObj.getString("packageId");
 
-				break;
+						if (success != null) {
+							if (success.equals("true"))
+								startApp(packageName, context);
+						}
+						break;
 
-			default:
-				break;
+					default:
+						break;
+					}
+				}
+
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			/*
-			 * Boolean isInstalled = Boolean.getBoolean(intent.getData()); if
-			 * (!isInstalled) {
-			 * 
-			 * DatabaseHandler dbHandler = new DatabaseHandler(context);
-			 * 
-			 * AppInfo appInfo = dbHandler.getNotInstalledAppInfo(1); if
-			 * (appInfo != null) { appInfo.setIsInstalled(1);
-			 * dbHandler.updateAppInfo(appInfo);
-			 * 
-			 * Intent i = new Intent(context, AppRTCVideoActivity.class);
-			 * i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			 * //i.setAction(Constants.ACTION_LAUNCH_APP);
-			 * //i.putExtra("connectionID", 0); // intent.setClass(AppList.this,
-			 * AppRTCVideoActivity.class); i.putExtra("pkgName",
-			 * appInfo.getPackageName());
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * context.startActivity(i); }
-			 * 
-			 * }
-			 */
+
 			break;
 		default:
 			break;
 		}
 	}
 
-	public static void startApp(SVMPProtocol.Intent intent, Context context) {
-		DatabaseHandler dbHandler = new DatabaseHandler(context);
+	public static void startApp(String packageName, Context context) {
+		/*
+		 * DatabaseHandler dbHandler = new DatabaseHandler(context);
+		 * 
+		 * AppInfo appInfo = dbHandler.getNotInstalledAppInfo(1); if (appInfo !=
+		 * null) { appInfo.setIsInstalled(1); dbHandler.updateAppInfo(appInfo);
+		 */
 
-		AppInfo appInfo = dbHandler.getNotInstalledAppInfo(1);
-		if (appInfo != null) {
-			appInfo.setIsInstalled(1);
-			dbHandler.updateAppInfo(appInfo);
+		Intent i = new Intent(context, AppRTCVideoActivity.class);
+		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		i.putExtra("pkgName", packageName);
 
-			Intent i = new Intent(context, AppRTCVideoActivity.class);
-			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			i.putExtra("pkgName", appInfo.getPackageName());
+		context.startActivity(i);
 
-			context.startActivity(i);
-			
-			
-		}
+		// }
 	}
 
 	// returns an error message if telephony is not enabled

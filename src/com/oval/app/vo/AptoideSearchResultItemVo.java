@@ -11,8 +11,15 @@ public class AptoideSearchResultItemVo {
 	private String size;
 	private String category;
 	private String apkid;
+	private String alternateUrl;
 	
 	
+	public String getAlternateUrl() {
+		return alternateUrl;
+	}
+	public void setAlternateUrl(String alternateUrl) {
+		this.alternateUrl = alternateUrl;
+	}
 	public String getName() {
 		return name;
 	}

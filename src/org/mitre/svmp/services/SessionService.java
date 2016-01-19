@@ -37,7 +37,7 @@ import org.mitre.svmp.protocol.SVMPProtocol;
 import org.mitre.svmp.protocol.SVMPProtocol.AuthResponse.AuthResponseType;
 import org.mitre.svmp.protocol.SVMPProtocol.Response;
 import com.citicrowd.oval.R;
-import com.oval.app.fragments.OvalDrawerActivity;
+import com.oval.app.activities.OvalDrawerActivity;
 
 /**
  * @author Joe Portner
@@ -197,20 +197,20 @@ public class SessionService extends Service implements StateObserver, MessageHan
         String contentText;
         if (connected) {
             contentText = (String)resources.getText(R.string.sessionService_notification_contentText_connected);
-            notice.setSmallIcon(R.drawable.svmp_status_green);
+            notice.setSmallIcon(R.drawable.ovalred);
         }
         else {
             // we need authentication, indicate that in the notification
             contentText = (String)resources.getText(R.string.sessionService_notification_contentText_disconnected);
-            notice.setSmallIcon(R.drawable.svmp_status_yellow);
+            notice.setSmallIcon(R.drawable.ovalred);
         }
         notice.setContentTitle(contentTitle)
                 .setContentText(String.format(contentText, connectionInfo.getDescription()))
                 .setOngoing(true);
 
         // Creates an explicit intent for the ConnectionList
-        Intent resultIntent = new Intent(this, OvalDrawerActivity.class);
-        resultIntent.putExtra("connectionID", connectionInfo.getConnectionID());
+        Intent resultIntent = new Intent(this, ConnectionList.class);
+//        resultIntent.putExtra("connectionID", connectionInfo.getConnectionID());
         PendingIntent resultPendingIntent;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {

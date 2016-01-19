@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/splash_background"
+    android:gravity="center" >
 
     <TextView
         android:id="@+id/toastTextView"
@@ -18,7 +20,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        android:src="@drawable/ovalnew" />
+        android:src="@drawable/ovalred" />
 
     <TextView
         android:id="@+id/preparingTextView"
@@ -26,8 +28,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/splashIcon"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="115dp"
+        android:layout_marginTop="15dp"
         android:text="Preparing...."
+        android:textColor="#ffffff"
         android:textSize="30sp" />
 
     <ProgressBar
@@ -60,54 +63,28 @@
         <ProgressBar
             android:id="@+id/vsvProgrssBar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="match_parent"	
             android:layout_weight=".3"
             android:visibility="invisible" />
 
-       <!--  <ToggleButton
-            android:id="@+id/qualityTggleBtn"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight=".3"
-            android:textOff="LQ"
-            android:textOn="HQ" /> -->
-
-        <!--
-             <ToggleButton
-            android:id="@+id/toggleButton1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-          
-            android:background="@drawable/toggle"
-            android:checked="false"
-            android:text=""
-            android:textOff=""
-            android:textOn="" />
-        -->
-       
-
-      <!--   <Switch
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight=".3"
-            
-            android:textOn="HQ"
-            android:textOff="LQ" /> -->
-        
-        <Spinner 
+        <Spinner
             android:id="@+id/qualitySpinner"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone" />
+         <ImageView
+            android:id="@+id/homeStreamingBtn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight=".3"
-            
-            />
+            android:src="@drawable/close_small" />
 
         <ImageView
             android:id="@+id/stopStreamingBtn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight=".3"
-            android:src="@drawable/ic_dialog_close_normal_holo" />
+            android:src="@drawable/home_small" />
     </LinearLayout>
 
 </RelativeLayout>

@@ -99,6 +99,7 @@ public class TouchHandler implements Constants {
             final float adjY = event.getY(i) * this.yScaleFactor;
             p.clear();
             p.setId(event.getPointerId(i));
+            
             p.setX(adjX);
             p.setY(adjY);
             eventmsg.addItems(p.build());
@@ -124,6 +125,8 @@ public class TouchHandler implements Constants {
         msg.addTouch(eventmsg); // TODO: batch touch events
 
         // Send touch event to VM
+        
+     
         activity.sendMessage(msg.build());
 
         return true;

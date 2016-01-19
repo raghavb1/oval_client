@@ -1,11 +1,10 @@
-package info.androidhive.slidingmenu.adapter;
+package com.oval.slidingmenu.adapter;
 
-
-import info.androidhive.slidingmenu.model.NavDrawerItem;
 
 import java.util.ArrayList;
 
 import com.citicrowd.oval.R;
+import com.oval.slidingmenu.model.NavDrawerItem;
 
 import android.app.Activity;
 import android.content.Context;

@@ -108,7 +108,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             {"IconHash", "BLOB"},
             {"isInstalled", "INTEGER DEFAULT 1"},
             {"IconUrl", "TEXT"},
-            {"IsUsed", "INTEGER DEFAULT 0"}
+            {"IsUsed", "INTEGER DEFAULT 0"},
+            {"DownloadUrl", "TEXT"}
         },{
      	   {"SearchString", "TEXT", "PRIMARY KEY"}
      }
@@ -709,8 +710,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             int isInstalled = cursor.getInt(6);
             String iconUrl=cursor.getString(7);
             int isUsed=cursor.getInt(8);
+            String downloadUrl=cursor.getString(9);
 
-            return new AppInfo(connectionID, packageName, appName, favorite, icon, iconHash, isInstalled,iconUrl,isUsed);
+            return new AppInfo(connectionID, packageName, appName, favorite, icon, iconHash, isInstalled,iconUrl,isUsed,downloadUrl);
         } catch( Exception e ) {
             e.printStackTrace();
             return null;
@@ -897,11 +899,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             contentValues.put("isInstalled", appInfo.getIsInstalled());
             contentValues.put("IconUrl", appInfo.getIconUrl());
             contentValues.put("IsUsed", appInfo.getIsUsed());
+            contentValues.put("DownloadUrl", appInfo.getDownloadUrl());
             
-            
-            
-            
-          
             byte[] icon = appInfo.getIcon();
             if (icon != null)
                 contentValues.put("Icon", icon);

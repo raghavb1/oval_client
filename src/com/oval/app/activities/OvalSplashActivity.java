@@ -2,7 +2,6 @@ package com.oval.app.activities;
 
 import org.mitre.svmp.activities.SvmpActivity;
 import com.citicrowd.oval.R;
-import com.oval.app.fragments.OvalDrawerActivity;
 
 import org.mitre.svmp.common.ConnectionInfo;
 

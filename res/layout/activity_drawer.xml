@@ -14,7 +14,7 @@
 
     <RelativeLayout
         android:id="@+id/whatYouWantInLeftDrawer"
-        android:layout_width="250dp"
+        android:layout_width="320dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@android:color/black" >
@@ -38,11 +38,10 @@
                 android:id="@+id/emailTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
                 android:layout_below="@+id/icProfile"
-                 android:layout_alignParentBottom="true"
-                   android:layout_marginLeft="15dp"
-                    android:textColor="#ffffff"
-                 />
+                android:layout_centerInParent="true"
+                android:textColor="#ffffff" />
         </RelativeLayout>
 
         <ListView
@@ -50,11 +49,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/nav_header_container"
-            android:layout_marginTop="15dp"
             android:background="@color/list_background"
             android:choiceMode="singleChoice"
             android:divider="@color/list_divider"
-            android:dividerHeight="1dp"
+            android:dividerHeight="0dp"
             android:listSelector="@drawable/list_selector" />
     </RelativeLayout>
 

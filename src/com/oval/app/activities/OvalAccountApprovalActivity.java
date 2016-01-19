@@ -26,6 +26,8 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mitre.svmp.activities.AppList;
 import org.mitre.svmp.activities.AppRTCRefreshAppsActivity;
 import org.mitre.svmp.activities.ConnectionList;
@@ -37,6 +39,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import com.oval.app.network.CustomSSLSocketFactory;
+import com.oval.app.network.HTTPServiceHandler;
 import com.oval.app.vo.LoginRequestVO;
 import com.oval.app.vo.LoginResultVO;
 
@@ -45,6 +48,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -195,69 +199,27 @@ public class OvalAccountApprovalActivity extends SvmpActivity implements OnClick
 
 	}
 
-	/*private void updateUI(boolean isSignedIn) {
-
-		if (isSignedIn) {
-
-			if (loginResultVo.getApproved().equalsIgnoreCase("true")) {
-
-				Intent i = new Intent(OvalAccountApprovalActivity.this, OvalSearchActivity.class);
-				i.putExtra("connectionID", 0);
-				startActivity(i);
-				finish();
-
-			} else {
-				Toast.makeText(OvalAccountApprovalActivity.this, "Not yet Approved", Toast.LENGTH_LONG).show();
-
-			}
-
-		}
-
-	}*/
-
 	private void updateUI(boolean isSignedIn) {
 		String status = loginResultVo.getApproved();
 
 		if (isSignedIn) {
-			
+
 			if (status.equalsIgnoreCase("true")) {
 
 				long result;
-				
+
 				connectionInfo.setStatus(OvalLoginActivity.STATUS_LOGGEDIN);
 
 				result = dbHandler.updateConnectionInfo(connectionInfo);
 				if (result > -1) {
-					/*
-					 * Intent i = new Intent(OvalLoginActivity.this,
-					 * ConnectionList.class); i.setAction(ACTION_LAUNCH_APP);
-					 */
 
-					refreshApps(connectionInfo);
-					/*
-					 * Intent i = new Intent(OvalLoginActivity.this,
-					 * OvalSearchActivity.class); i.putExtra("connectionID", 0);
-					 * startActivity(i); finish();
-					 */
+					new AssignVMAsyncTask().execute();
+					// refreshApps(connectionInfo);
+
 				}
 			} else {
 				Toast.makeText(OvalAccountApprovalActivity.this, "Not yet Approved", Toast.LENGTH_LONG).show();
 			}
-
-			// enrytpion type and auth type to one and certificate to a
-			// blank string
-			// update id gives connection id that is zero in this case
-
-			// insert or update the ConnectionInfo in the database
-
-			/*
-			 * if (.equalsIgnoreCase("true")) {
-			 * 
-			 * 
-			 * } else {
-			 * 
-			 * }
-			 */
 
 		} else {
 			Intent i = new Intent(OvalAccountApprovalActivity.this, OvalSearchActivity.class);
@@ -275,8 +237,7 @@ public class OvalAccountApprovalActivity extends SvmpActivity implements OnClick
 									// uses this.sendRequestCode
 
 	}
-	
-	
+
 	@Override
 	protected void afterStartAppRTC(ConnectionInfo connectionInfo) {
 		// after we have handled the auth prompt and made sure the service is
@@ -296,10 +257,9 @@ public class OvalAccountApprovalActivity extends SvmpActivity implements OnClick
 
 		// start the AppRTCActivity
 		startActivityForResult(intent, this.sendRequestCode);
-		
+
 	}
-	
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
 		// TODO Auto-generated method stub
@@ -329,7 +289,51 @@ public class OvalAccountApprovalActivity extends SvmpActivity implements OnClick
 			super.onActivityResult(requestCode, responseCode, intent);
 
 	}
-	
+
+	private class AssignVMAsyncTask extends AsyncTask<String, String, String> {
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+
+			super.onPreExecute();
+			pDialog = new ProgressDialog(OvalAccountApprovalActivity.this);
+			pDialog.setMessage("Please wait...");
+			pDialog.setCancelable(false);
+			pDialog.show();
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+
+			HTTPServiceHandler httpServiceHandler = new HTTPServiceHandler(OvalAccountApprovalActivity.this);
+
+			String jsonStr = httpServiceHandler.makeSecureServiceCall(
+					getResources().getString(R.string.assign_vm_url) + connectionInfo.getUsername(),
+					HTTPServiceHandler.GET, null);
+
+			return jsonStr;
+
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			// TODO Auto-generated method stub
+
+			super.onPostExecute(result);
+
+			pDialog.dismiss();
+			try {
+				JSONObject jObj = new JSONObject(result);
+				String success = jObj.getString("success");
+				if (success.equals("true")) {
+					refreshApps(connectionInfo);
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+	}
 }
-
-
