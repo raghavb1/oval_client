@@ -1,11 +1,11 @@
 package com.oval.app.activities;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import org.mitre.svmp.activities.AppList;
 import org.mitre.svmp.activities.AppRTCRefreshAppsActivity;
-import org.mitre.svmp.activities.ConnectionList;
 import org.mitre.svmp.activities.SvmpActivity;
 import org.mitre.svmp.common.ConnectionInfo;
 import org.mitre.svmp.services.SessionService;
@@ -17,7 +17,6 @@ import com.oval.slidingmenu.adapter.NavDrawerListAdapter;
 import com.oval.slidingmenu.model.NavDrawerItem;
 import com.squareup.picasso.Picasso;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -28,15 +27,11 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class OvalDrawerActivity extends SvmpActivity {
 	private DrawerLayout mDrawerLayout;
@@ -175,6 +170,34 @@ public class OvalDrawerActivity extends SvmpActivity {
 		}
 	}
 
+	public void clearApplicationData() {
+		File cache = getCacheDir();
+		File appDir = new File(cache.getParent());
+		if (appDir.exists()) {
+			String[] children = appDir.list();
+			for (String s : children) {
+				if (!s.equals("lib")) {
+					deleteDir(new File(appDir, s));
+					Log.i("TAG", "**************** File /data/data/APP_PACKAGE/" + s + " DELETED *******************");
+				}
+			}
+		}
+	}
+
+	public static boolean deleteDir(File dir) {
+		if (dir != null && dir.isDirectory()) {
+			String[] children = dir.list();
+			for (int i = 0; i < children.length; i++) {
+				boolean success = deleteDir(new File(dir, children[i]));
+				if (!success) {
+					return false;
+				}
+			}
+		}
+
+		return dir.delete();
+	}
+
 	/*
 	 * * Called when invalidateOptionsMenu() is triggered
 	 */
@@ -192,8 +215,10 @@ public class OvalDrawerActivity extends SvmpActivity {
 
 			break;
 		case 1:
-			// fragment = new SearchFragment();
+			// fragment = new OvalSearchFragment();
 			refreshApps(connectionInfo);
+
+			// clearApplicationData();
 			break;
 
 		default:
@@ -328,7 +353,7 @@ public class OvalDrawerActivity extends SvmpActivity {
 	public void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-	    Intent stopServiceIntent = new Intent(ACTION_STOP_SERVICE, null, this, SessionService.class);
+		Intent stopServiceIntent = new Intent(ACTION_STOP_SERVICE, null, this, SessionService.class);
 		stopService(stopServiceIntent);
 	}
 

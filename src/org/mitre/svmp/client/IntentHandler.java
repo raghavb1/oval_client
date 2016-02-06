@@ -115,7 +115,7 @@ public class IntentHandler {
 		Intent i = new Intent(context, AppRTCVideoActivity.class);
 		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		i.putExtra("pkgName", packageName);
-
+		
 		context.startActivity(i);
 
 		// }

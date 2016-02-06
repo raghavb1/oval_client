@@ -14,5 +14,7 @@
     <color name="counter_text_bg">#626262</color>
     <color name="counter_text_color">#c5c4c4</color>
     <color name="splash_background">#c9222d</color>
+    <color name="compatiblity_green">#48CB4C</color>
+    <color name="compatibility_false">#ffffff</color>
 
 </resources>

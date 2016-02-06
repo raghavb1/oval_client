@@ -54,7 +54,7 @@ public class CustomSSLSocketFactory extends org.apache.http.conn.ssl.SSLSocketFa
 	public CustomSSLSocketFactory(KeyStore keyStore)
 			throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
 		super(null);
-		if (keyStore == null) {
+		/*if (keyStore == null) {
 
 			try {
 				SSLContext context = SSLContext.getInstance("TLS");
@@ -82,7 +82,7 @@ public class CustomSSLSocketFactory extends org.apache.http.conn.ssl.SSLSocketFa
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		} else {// Create a TrustManager that trusts the CAs in our KeyStore
+		} else */{// Create a TrustManager that trusts the CAs in our KeyStore
 			String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
 			TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
 			tmf.init(keyStore);

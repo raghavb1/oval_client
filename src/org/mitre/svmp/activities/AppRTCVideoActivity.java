@@ -118,6 +118,7 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 	private String apkPath;
 
 	private GestureDetectorCompat mDetector;
+	boolean scrollClicked = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -128,10 +129,6 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 		apkPath = intent.getStringExtra("apkPath");
 
 		mDetector = new GestureDetectorCompat(this, new CustomScrollGesture());
-		/*
-		 * getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-		 * getActionBar().hide();
-		 */
 
 		super.onCreate(savedInstanceState);
 
@@ -230,6 +227,9 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 
 		addContentView(ll,
 				new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 50 * deviceDisplaySize.y / 1280));
+		addContentView(scrollBtnsRLayout,
+				new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+				// addContentView(view, params);
 
 		// vsvProgrssBar.setVisibility(View.INVISIBLE);
 
@@ -290,6 +290,89 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 				disconnectAndExit();
 			}
 		});
+
+		scrollUpImgVw.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+
+				// TODO Auto-generated method stub
+				// if (scrollClicked == false) {
+				scrollClicked = true;
+				Vibrator vb = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+				vb.vibrate(50);
+				// vsv.onPause();
+				vsvProgrssBar.setVisibility(View.VISIBLE);
+
+				Handler handler = new Handler();
+				handler.postDelayed(new Runnable() {
+
+					@Override
+					public void run() {
+						vsvProgrssBar.setVisibility(View.INVISIBLE);
+						// vsv.onResume();
+						scrollClicked = false;
+					}
+				}, 2000);
+
+				SVMPProtocol.Request.Builder msg = SVMPProtocol.Request.newBuilder();
+				SVMPProtocol.TouchEvent.Builder eventmsg = SVMPProtocol.TouchEvent.newBuilder();
+
+				eventmsg.setAction(51);
+				msg.setType(RequestType.TOUCHEVENT);
+				msg.addTouch(eventmsg); // TODO: batch touch events
+
+				// Send touch event to VM
+
+				sendMessage(msg.build());
+				// }
+
+			}
+		});
+
+		scrolldownImgVw.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+
+				// TODO Auto-generated method stub
+				// if (scrollClicked == false) {
+				scrollClicked = true;
+
+				Vibrator vb = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+				vb.vibrate(50);
+				// vsv.onPause();
+				vsvProgrssBar.setVisibility(View.VISIBLE);
+
+				Handler handler = new Handler();
+				handler.postDelayed(new Runnable() {
+
+					@Override
+					public void run() {
+						vsvProgrssBar.setVisibility(View.INVISIBLE);
+						// vsv.onResume();
+						scrollClicked = false;
+					}
+				}, 2000);
+
+				SVMPProtocol.Request.Builder msg = SVMPProtocol.Request.newBuilder();
+				SVMPProtocol.TouchEvent.Builder eventmsg = SVMPProtocol.TouchEvent.newBuilder();
+
+				eventmsg.setAction(50);
+				msg.setType(RequestType.TOUCHEVENT);
+				msg.addTouch(eventmsg); // TODO: batch touch events
+
+				// Send touch event to VM
+
+				sendMessage(msg.build());
+			}
+
+			// }
+		});
+
+		((ViewGroup) scrollBtnsRLayout.getParent()).removeView(scrollBtnsRLayout);
 
 		((ViewGroup) ll.getParent()).removeView(ll);
 
@@ -491,6 +574,7 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 			public void run() {
 				Log.d("UI thread", "I am the UI thread");
 				ll.setVisibility(View.VISIBLE);
+				scrollBtnsRLayout.setVisibility(View.VISIBLE);
 			}
 		});
 	}
@@ -539,14 +623,17 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 
 				// TODO onClick code
 			}
-			break;
+
+			touchHandler.onTouchEvent(ev);
+
+			return touchHandler.sendTouchEvent();
 		case MotionEvent.ACTION_MOVE:
 			if (isOnClick && (Math.abs(mDownX - ev.getX()) > SCROLL_THRESHOLD
 					|| Math.abs(mDownY - ev.getY()) > SCROLL_THRESHOLD)) {
 				Log.i(TAG, "movement detected");
 				isOnClick = false;
 
-				vsv.onPause();
+				// vsv.onPause();
 
 			}
 			break;
@@ -562,9 +649,9 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 			@Override
 			public void run() {
 				vsvProgrssBar.setVisibility(View.INVISIBLE);
-				vsv.onResume();
+				// vsv.onResume();
 			}
-		}, 5000);
+		}, 1000);
 
 		Log.e(TAG, "on activity touch is finishing");
 

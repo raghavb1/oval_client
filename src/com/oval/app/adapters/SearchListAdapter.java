@@ -72,10 +72,7 @@ public class SearchListAdapter extends BaseAdapter {
 		holder.appNameTextView = (TextView) convertView.findViewById(R.id.appNameTextView);
 		holder.appCategoryTextView = (TextView) convertView.findViewById(R.id.appCategoryTextView);
 		holder.appIconImageView = (ImageView) convertView.findViewById(R.id.appIconImageView);
-	
-		
-
-		
+		holder.compatibilityView=(View) convertView.findViewById(R.id.compatibilityView);
 
 		if (items != null) {
 			AptoideSearchResultItemVo searchItem = items.get(position);
@@ -90,11 +87,24 @@ public class SearchListAdapter extends BaseAdapter {
 					icon = searchItem.getIcon();
 
 				}
-				
-			
-				Picasso.with(activity).load(activity.getString(R.string.aptoide_icon_path) + icon)
+
+				Picasso.with(activity).load( icon)
 
 						.into(holder.appIconImageView);
+				
+				if(searchItem.getCompatibility()!=null)
+				{
+					if(searchItem.getCompatibility().equals("true"))
+					{
+						holder.compatibilityView.setBackgroundColor(activity.getResources().getColor(R.color.compatiblity_green));
+					}
+					else
+					{
+						holder.compatibilityView.setBackgroundColor(activity.getResources().getColor(R.color.compatibility_false));
+					}
+				}
+				
+				
 			}
 		}
 		return convertView;
@@ -104,7 +114,8 @@ public class SearchListAdapter extends BaseAdapter {
 		public ImageView appIconImageView;
 		public TextView appNameTextView;
 		public TextView appCategoryTextView;
-	
+		public View compatibilityView;
+
 	}
 
 }

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/splash_background"
-    android:gravity="center" >
+    >
 
     <TextView
         android:id="@+id/toastTextView"
@@ -11,41 +11,50 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:layout_marginBottom="80dp" />
 
-    <ImageView
-        android:id="@+id/splashIcon"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:src="@drawable/ovalred" />
-
-    <TextView
-        android:id="@+id/preparingTextView"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/splashIcon"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
-        android:text="Preparing...."
-        android:textColor="#ffffff"
-        android:textSize="30sp" />
+        android:layout_centerVertical="true" >
 
-    <ProgressBar
-        android:id="@+id/preparingPbar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/preparingTextView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp" />
+        <ImageView
+            android:id="@+id/splashIcon"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/puck_icon" />
+
+        <TextView
+            android:id="@+id/preparingTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/splashIcon"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="15dp"
+            android:text="Preparing...."
+            android:textColor="#ffffff"
+            android:textSize="30sp" />
+
+        <ProgressBar
+            android:id="@+id/preparingPbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/preparingTextView"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="10dp" />
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/appLoadingImgVw"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/preparingPbar"
         android:layout_alignParentTop="true"
         android:layout_marginTop="45dp"
         android:src="@drawable/svmp_app_icon"
@@ -63,7 +72,7 @@
         <ProgressBar
             android:id="@+id/vsvProgrssBar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"	
+            android:layout_height="match_parent"
             android:layout_weight=".3"
             android:visibility="invisible" />
 
@@ -72,7 +81,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone" />
-         <ImageView
+
+        <ImageView
             android:id="@+id/homeStreamingBtn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -86,5 +96,32 @@
             android:layout_weight=".3"
             android:src="@drawable/home_small" />
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/scrollBtnsRLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:visibility="gone" >
+
+        <ImageView
+            android:id="@+id/scrollUpImgVw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/scrolldownImgVw"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/scroll_up" />
+
+        <ImageView
+            android:id="@+id/scrolldownImgVw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/scroll_down" />
+    </RelativeLayout>
 
 </RelativeLayout>

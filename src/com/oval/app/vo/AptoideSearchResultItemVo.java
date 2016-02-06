@@ -12,8 +12,15 @@ public class AptoideSearchResultItemVo {
 	private String category;
 	private String apkid;
 	private String alternateUrl;
+	private String compatibility;
 	
 	
+	public String getCompatibility() {
+		return compatibility;
+	}
+	public void setCompatibility(String compatibility) {
+		this.compatibility = compatibility;
+	}
 	public String getAlternateUrl() {
 		return alternateUrl;
 	}

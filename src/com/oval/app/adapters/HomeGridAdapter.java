@@ -69,7 +69,7 @@ public class HomeGridAdapter extends BaseAdapter {
 
 			holder.appName.setText(gridItem.getAppName());
 			
-			Picasso.with(context).load(context.getString(R.string.aptoide_icon_path) + gridItem.getIconUrl())
+			Picasso.with(context).load(gridItem.getIconUrl())
 
 			.into(holder.appIconImageView);
 

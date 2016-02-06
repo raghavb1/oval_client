@@ -1,6 +1,7 @@
 package com.oval.app.fragments;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.json.JSONException;
@@ -71,6 +72,13 @@ public class OvalHomeFragment extends Fragment {
 		connectionInfo = dbHandler.getConnectionInfo(1);
 
 	}
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		search.hideResults();
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -111,10 +119,11 @@ public class OvalHomeFragment extends Fragment {
 		});
 
 		search = (SearchBox) rootView.findViewById(R.id.searchbox);
-		search.setLogoText("OVAL");
+		search.setLogoText(getString(R.string.app_name));
 		search.enableVoiceRecognition(this);
 
 		ArrayList<String> searchHistory = (ArrayList<String>) dbHandler.getAllSearchHistory();
+		Collections.reverse(searchHistory);
 
 		for (String searchString : searchHistory) {
 

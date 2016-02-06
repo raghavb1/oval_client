@@ -2,6 +2,7 @@ package com.oval.app.fragments;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -41,6 +42,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -51,6 +53,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class OvalSearchFragment extends Fragment {
 
@@ -65,6 +68,7 @@ public class OvalSearchFragment extends Fragment {
 	Boolean isSearch;
 	private SearchBox search;
 
+
 	public static final String TAG = "OvalSearchFragment";
 
 	DatabaseHandler dbHandler;
@@ -72,6 +76,8 @@ public class OvalSearchFragment extends Fragment {
 	Context context;
 	ConnectionInfo connectionInfo;
 	int pos;
+	
+	TextView noResultTxt;
 
 	public OvalSearchFragment() {
 	}
@@ -86,9 +92,11 @@ public class OvalSearchFragment extends Fragment {
 		dbHandler = new DatabaseHandler(context);
 
 		connectionInfo = dbHandler.getConnectionInfo(1);
+		
+		noResultTxt=(TextView) rootView.findViewById(R.id.noResultTxt);
 
 		search = (SearchBox) rootView.findViewById(R.id.searchbox);
-		search.setLogoText("OVAL");
+		search.setLogoText(getString(R.string.app_name));
 		search.enableVoiceRecognition(this);
 		searchResultListView = (ListView) rootView.findViewById(R.id.searchResultListView);
 
@@ -114,6 +122,7 @@ public class OvalSearchFragment extends Fragment {
 		});
 
 		ArrayList<String> searchHistory = (ArrayList<String>) dbHandler.getAllSearchHistory();
+		Collections.reverse(searchHistory);
 
 		for (String searchString : searchHistory) {
 
@@ -224,18 +233,19 @@ public class OvalSearchFragment extends Fragment {
 
 		AptoideSearchResultItemVo searchItem = searchResultsList.get(pos);
 		if (searchItem != null) {
-			/*
-			 * Intent i = new Intent(context, ConnectionList.class);
-			 * i.setAction(Constants.ACTION_LAUNCH_APP);
-			 * i.putExtra("connectionID", 1);
-			 */
+			
 
 			AppInfo appInfoTemp = dbHandler.getAppInfo(1, searchItem.getApkid());
 			String downloadUrl;
 
 			if (appInfoTemp != null) {
 
-				downloadUrl = appInfoTemp.getDownloadUrl();
+				//downloadUrl = appInfoTemp.getDownloadUrl();
+				
+				 downloadUrl = searchItem.getAlternateUrl();
+				if (downloadUrl == null) {
+					downloadUrl =  searchItem.getPath();
+				}
 				if (appInfoTemp.getIsUsed() == 0) {
 					appInfoTemp.setIsUsed(1);
 					dbHandler.updateAppInfo(appInfoTemp);
@@ -250,7 +260,7 @@ public class OvalSearchFragment extends Fragment {
 
 				String apkDownloadUrl = searchItem.getAlternateUrl();
 				if (apkDownloadUrl == null) {
-					apkDownloadUrl = context.getString(R.string.aptoide_apk_path) + searchItem.getPath();
+					apkDownloadUrl = searchItem.getPath();
 				}
 				AppInfo appinfo = new AppInfo(1, searchItem.getApkid(), searchItem.getName(), false, null, null, 0,
 						iconPath, 1, apkDownloadUrl);
@@ -274,6 +284,14 @@ public class OvalSearchFragment extends Fragment {
 
 		}
 
+	}
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		search.hideResults();
 	}
 
 	private void makeSearch(String searchStr) {
@@ -357,9 +375,16 @@ public class OvalSearchFragment extends Fragment {
 		// TODO Auto-generated method stub
 		if (rawAptoideSearchResultVo != null) {
 			if (rawAptoideSearchResultVo.getSros() != null) {
+				searchResultListView.setVisibility(View.VISIBLE);
 				searchResultsList = rawAptoideSearchResultVo.getSros();
 				SearchListAdapter adapter = new SearchListAdapter(getActivity(), searchResultsList);
 				searchResultListView.setAdapter(adapter);
+				noResultTxt.setVisibility(View.GONE);
+			}
+			else
+			{
+				searchResultListView.setVisibility(View.INVISIBLE);
+				noResultTxt.setVisibility(View.VISIBLE);
 			}
 		}
 

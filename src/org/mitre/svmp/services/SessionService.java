@@ -197,12 +197,12 @@ public class SessionService extends Service implements StateObserver, MessageHan
         String contentText;
         if (connected) {
             contentText = (String)resources.getText(R.string.sessionService_notification_contentText_connected);
-            notice.setSmallIcon(R.drawable.ovalred);
+            notice.setSmallIcon(R.drawable.puck_icon);
         }
         else {
             // we need authentication, indicate that in the notification
             contentText = (String)resources.getText(R.string.sessionService_notification_contentText_disconnected);
-            notice.setSmallIcon(R.drawable.ovalred);
+            notice.setSmallIcon(R.drawable.puck_icon);
         }
         notice.setContentTitle(contentTitle)
                 .setContentText(String.format(contentText, connectionInfo.getDescription()))

@@ -35,6 +35,7 @@ import org.mitre.svmp.activities.SvmpActivity;
 import com.citicrowd.oval.R;
 import org.mitre.svmp.common.ConnectionInfo;
 
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.Scopes;
@@ -573,6 +574,16 @@ public class OvalLoginActivity extends SvmpActivity
 	private void getProfileInformation() {
 		try {
 			if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+				
+//				accessToken = GoogleAuthUtil.getToken(
+//                        getApplicationContext(),
+//                        mPlusClient.getAccountName(), "oauth2:" 
+//                                + Scopes.PLUS_LOGIN + " "
+//                                + Scopes.PLUS_PROFILE+" https://www.googleapis.com/auth/plus.profile.emails.read");
+//				
+				
+				
+				
 				Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
 				personInfoVo.setName(currentPerson.getDisplayName());
 				personInfoVo.setPhotoUrl(currentPerson.getImage().getUrl());

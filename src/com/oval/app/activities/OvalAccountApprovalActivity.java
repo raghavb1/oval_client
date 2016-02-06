@@ -326,7 +326,12 @@ public class OvalAccountApprovalActivity extends SvmpActivity implements OnClick
 				JSONObject jObj = new JSONObject(result);
 				String success = jObj.getString("success");
 				if (success.equals("true")) {
-					refreshApps(connectionInfo);
+					//refreshApps(connectionInfo);
+					
+					Intent i = new Intent(OvalAccountApprovalActivity.this, OvalSearchActivity.class);
+					i.putExtra("connectionID", 0);
+					startActivity(i);
+					finish();
 				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block

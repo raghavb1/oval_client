@@ -40,8 +40,8 @@
     <string name="services_prefix_url_aptoide">http://52.27.68.118:10080/OvalSearch/applications/getApplications</string>
     <string name="oval_app_services_pkgname">com.example.androidhive</string>
     <string name="edit_text_hint_search">Search</string>
-    <string name="aptoide_icon_path">http://pool.img.aptoide.com/apps/</string>
-    <string name="aptoide_apk_path">http://pool.apk.aptoide.com/apps/</string>
+    <!-- <string name="aptoide_icon_path">http://pool.img.aptoide.com/apps/</string>
+    <string name="aptoide_apk_path">http://pool.apk.aptoide.com/apps/</string> -->
     <string name="fetch_app_icon_url">http://52.27.68.118:10080/OvalSearch/applications/getAppData</string>
     <string name="assign_vm_url">http://oval.co.in/oval/users/assignVM/</string>
 
@@ -72,7 +72,7 @@
     <string name="title_home">Home</string>
 
     <!-- Till here -->
-    <string name="app_name">OVAL</string>
+    <string name="app_name">PUCK</string>
     <string name="error">Error</string>
     <string name="errorCamera">Camera Error</string>
     <string name="codectype_prompt">Choose a codec type</string>

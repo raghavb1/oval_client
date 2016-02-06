@@ -63,6 +63,8 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ZoomControls;
+
 import org.json.JSONObject;
 import org.mitre.svmp.apprtc.*;
 import org.mitre.svmp.client.*;
@@ -101,34 +103,43 @@ public class AppRTCActivity extends Activity implements StateObserver, MessageHa
 
 	protected ImageView appLoadingImgVw;
 	protected TextView preparingTextView;
-	 ProgressBar vsvProgrssBar;
+	ProgressBar vsvProgrssBar;
 	Spinner qualitySpinner;
-	
+
 	LinearLayout ll;
+	RelativeLayout scrollBtnsRLayout;
+	
+	public ImageView scrollUpImgVw, scrolldownImgVw, splashIcon;
+	
+
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_apprtc);
 		getWindow().getDecorView().setBackgroundColor(Color.WHITE);
-		
-		
-		vsvProgrssBar=(ProgressBar) findViewById(R.id.vsvProgrssBar);
-		
-		
-		qualitySpinner=(Spinner) findViewById(R.id.qualitySpinner);
-		
-				
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-		        	R.array.video_qualities, android.R.layout.simple_spinner_item);
-		
+
+		vsvProgrssBar = (ProgressBar) findViewById(R.id.vsvProgrssBar);
+
+		qualitySpinner = (Spinner) findViewById(R.id.qualitySpinner);
+
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.video_qualities,
+				android.R.layout.simple_spinner_item);
+
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		
+
 		qualitySpinner.setAdapter(adapter);
+
+		ll = (LinearLayout) findViewById(R.id.vsvLinear);
+		scrollBtnsRLayout=(RelativeLayout) findViewById(R.id.scrollBtnsRLayout);
 		
-		 ll= (LinearLayout)findViewById(R.id.vsvLinear);
+		scrollUpImgVw=(ImageView) findViewById(R.id.scrollUpImgVw);
+		scrolldownImgVw=(ImageView) findViewById(R.id.scrolldownImgVw);
+	
 		preparingTextView = (TextView) findViewById(R.id.preparingTextView);
 		appLoadingImgVw = (ImageView) findViewById(R.id.appLoadingImgVw);
+		splashIcon=(ImageView) findViewById(R.id.splashIcon);
 
 		// lock the application to the natural "up" orientation of the physical
 		// device
@@ -209,7 +220,7 @@ public class AppRTCActivity extends Activity implements StateObserver, MessageHa
 		public void onServiceConnected(ComponentName className, IBinder iBinder) {
 			// We've bound to SessionService, cast the IBinder and get
 			// SessionService instance
-			
+
 			Log.i("info", "Service Connected");
 			appRtcClient = (AppRTCClient) iBinder;
 			Log.i("checking", appRtcClient.toString());
@@ -232,6 +243,7 @@ public class AppRTCActivity extends Activity implements StateObserver, MessageHa
 		pd.setTitle(R.string.appRTC_progressDialog_title);
 		pd.setMessage(getResources().getText(R.string.appRTC_progressDialog_message));
 		pd.setIndeterminate(true);
+		
 		pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
 			@Override
 			public void onCancel(DialogInterface dialog) {
@@ -254,16 +266,14 @@ public class AppRTCActivity extends Activity implements StateObserver, MessageHa
 		if (proxying)
 			disconnectAndExit();
 	}
-	
-	
+
 	public void onPause(boolean videoRunning) {
 		super.onPause();
-		if(!videoRunning)
-		{
+		if (!videoRunning) {
 			if (proxying)
 				disconnectAndExit();
 		}
-	
+
 	}
 
 	// Log |msg| and Toast about it.
@@ -279,8 +289,6 @@ public class AppRTCActivity extends Activity implements StateObserver, MessageHa
 			}
 		});
 	}
-	
-	
 
 	// called from PCObserver, SDPObserver, RotationHandler, and TouchHandler
 	public void sendMessage(Request msg) {
