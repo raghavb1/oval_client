@@ -9,15 +9,41 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <GridView
-        android:id="@+id/gridView1"
-        android:layout_width="fill_parent"
+    <TextView
+        android:id="@+id/myAppsTv"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/searchbox"
+        android:text="@string/my_apps_txt_vw"
+        android:textSize="14sp" 
+        android:layout_marginTop="10dp"
+        android:visibility="gone">
+    </TextView>
+
+    <GridView
+        android:id="@+id/gridView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/myAppsTv"
         android:columnWidth="100dp"
         android:gravity="center"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth" >
     </GridView>
 
+    <!-- <TextView
+        android:id="@+id/TrendingApps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/gridView1"
+        android:text="@string/trnding_apps_txt_vw" >
+    </TextView>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/trndingAppsRcyclrVw"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical" 
+        android:layout_below="@id/TrendingApps"/>
+ -->
 </RelativeLayout>
