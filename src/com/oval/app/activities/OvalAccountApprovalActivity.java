@@ -222,20 +222,11 @@ public class OvalAccountApprovalActivity extends SvmpActivity implements OnClick
 			}
 
 		} else {
-			Intent i = new Intent(OvalAccountApprovalActivity.this, OvalSearchActivity.class);
+			Intent i = new Intent(OvalAccountApprovalActivity.this, OvalDrawerActivity.class);
 			i.putExtra("connectionID", 0);
 			startActivity(i);
 			finish();
 		}
-	}
-
-	private void refreshApps(ConnectionInfo connectionInfo) {
-		// TODO Auto-generated method stub
-
-		this.sendRequestCode = AppList.REQUEST_REFRESHAPPS_FULL;
-		authPrompt(connectionInfo); // utilizes "startActivityForResult", which
-									// uses this.sendRequestCode
-
 	}
 
 	@Override
@@ -272,7 +263,7 @@ public class OvalAccountApprovalActivity extends SvmpActivity implements OnClick
 
 				super.onActivityResult(requestCode, RESULT_REPOPULATE, intent);
 
-				Intent i = new Intent(OvalAccountApprovalActivity.this, OvalSearchActivity.class);
+				Intent i = new Intent(OvalAccountApprovalActivity.this, OvalDrawerActivity.class);
 				i.putExtra("connectionID", 0);
 				startActivity(i);
 				finish();
@@ -326,9 +317,9 @@ public class OvalAccountApprovalActivity extends SvmpActivity implements OnClick
 				JSONObject jObj = new JSONObject(result);
 				String success = jObj.getString("success");
 				if (success.equals("true")) {
-					//refreshApps(connectionInfo);
-					
-					Intent i = new Intent(OvalAccountApprovalActivity.this, OvalSearchActivity.class);
+					// refreshApps(connectionInfo);
+
+					Intent i = new Intent(OvalAccountApprovalActivity.this, OvalDrawerActivity.class);
 					i.putExtra("connectionID", 0);
 					startActivity(i);
 					finish();

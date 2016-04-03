@@ -147,14 +147,14 @@ public class PCObserver implements PeerConnection.Observer {
         queuedRemoteCandidates = null;
     }
 
-    @Override
-    public void onError() {
-        new Thread(new Runnable() {
-            public void run() {
-                throw new RuntimeException("PeerConnection error!");
-            }
-        }).start();
-    }
+    
+//    public void onError() {
+//        new Thread(new Runnable() {
+//            public void run() {
+//                throw new RuntimeException("PeerConnection error!");
+//            }
+//        }).start();
+//    }
 
     @Override
     public void onSignalingChange(PeerConnection.SignalingState newState) {
@@ -231,4 +231,16 @@ public class PCObserver implements PeerConnection.Observer {
             factory = null;
         }
     }
+
+	public void onIceConnectionReceivingChange(boolean arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onError() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 }

@@ -114,7 +114,6 @@ public class OvalLoginActivity extends SvmpActivity
 	LoginRequestVO loginRequestVo = new LoginRequestVO();
 	LoginResultVO loginResultVo = new LoginResultVO();
 
-	
 	Gson gson = new Gson();
 	// boolean alreadySignedIn = false;
 
@@ -139,7 +138,6 @@ public class OvalLoginActivity extends SvmpActivity
 				.addOnConnectionFailedListener(this).addApi(Plus.API).addScope(new Scope(Scopes.PROFILE))
 				.addScope(new Scope(Scopes.EMAIL)).build();
 
-		
 	}
 
 	private void showpDialog() {
@@ -481,12 +479,17 @@ public class OvalLoginActivity extends SvmpActivity
 			// TODO Auto-generated method stub
 
 			super.onPostExecute(result);
-
-			Type type = new TypeToken<LoginResultVO>() {
-			}.getType();
-			loginResultVo = gson.fromJson(result, type);
-			pDialog.dismiss();
-			updateUI(true);
+			if (result != null) {
+				Type type = new TypeToken<LoginResultVO>() {
+				}.getType();
+				loginResultVo = gson.fromJson(result, type);
+				pDialog.dismiss();
+				updateUI(true);
+			} else {
+				Toast.makeText(OvalLoginActivity.this, "Couldnt Connect to Server. Please try again later.",
+						Toast.LENGTH_LONG).show();
+				finish();
+			}
 
 		}
 
@@ -530,7 +533,7 @@ public class OvalLoginActivity extends SvmpActivity
 			}
 
 		} else {
-			Intent i = new Intent(OvalLoginActivity.this, OvalSearchActivity.class);
+			Intent i = new Intent(OvalLoginActivity.this, OvalDrawerActivity.class);
 			i.putExtra("connectionID", 0);
 			startActivity(i);
 			finish();
@@ -574,16 +577,15 @@ public class OvalLoginActivity extends SvmpActivity
 	private void getProfileInformation() {
 		try {
 			if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-				
-//				accessToken = GoogleAuthUtil.getToken(
-//                        getApplicationContext(),
-//                        mPlusClient.getAccountName(), "oauth2:" 
-//                                + Scopes.PLUS_LOGIN + " "
-//                                + Scopes.PLUS_PROFILE+" https://www.googleapis.com/auth/plus.profile.emails.read");
-//				
-				
-				
-				
+
+				// accessToken = GoogleAuthUtil.getToken(
+				// getApplicationContext(),
+				// mPlusClient.getAccountName(), "oauth2:"
+				// + Scopes.PLUS_LOGIN + " "
+				// + Scopes.PLUS_PROFILE+"
+				// https://www.googleapis.com/auth/plus.profile.emails.read");
+				//
+
 				Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
 				personInfoVo.setName(currentPerson.getDisplayName());
 				personInfoVo.setPhotoUrl(currentPerson.getImage().getUrl());

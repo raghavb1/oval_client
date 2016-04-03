@@ -119,7 +119,7 @@ public class OvalHomeFragment extends Fragment {
 		});
 
 		search = (SearchBox) rootView.findViewById(R.id.searchbox);
-		search.setLogoText(getString(R.string.app_name));
+		search.setLogoText("Search App");
 		search.enableVoiceRecognition(this);
 
 		ArrayList<String> searchHistory = (ArrayList<String>) dbHandler.getAllSearchHistory();

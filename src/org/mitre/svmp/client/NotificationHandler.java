@@ -18,7 +18,7 @@ package org.mitre.svmp.client;
 import android.app.TaskStackBuilder;
 import android.os.Build;
 import com.citicrowd.oval.R;
-import com.oval.app.activities.OvalSearchActivity;
+
 
 import org.mitre.svmp.activities.ConnectionList;
 import org.mitre.svmp.protocol.SVMPProtocol;

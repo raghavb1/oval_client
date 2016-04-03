@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.citicrowd.oval"
-    android:versionCode="12"
-    android:versionName="1.0.0" >
+    android:versionCode="16"
+    android:versionName="1.0.3" >
 
     <uses-sdk
-        android:minSdkVersion="14"
+        android:minSdkVersion="19"
         android:targetSdkVersion="19" />
 
     <!-- Permissions Added by Abhishek Aggarwal -->
@@ -29,18 +29,18 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- used by AppList to create and remove shortcuts -->
-    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <!-- <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
 
-    <!-- used by IntentHandler to call phone numbers -->
+    used by IntentHandler to call phone numbers
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
-    <!-- used to allow an outside source to cause a ConnectionList to refresh its layout -->
+    used to allow an outside source to cause a ConnectionList to refresh its layout
     <permission
         android:name="org.mitre.svmp.PERMISSION_REFRESH"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="org.mitre.svmp.PERMISSION_REFRESH" />
+    <uses-permission android:name="org.mitre.svmp.PERMISSION_REFRESH" /> -->
 
     <application
         android:allowBackup="false"

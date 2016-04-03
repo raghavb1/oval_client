@@ -20,7 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.oval.app.activities.OvalDrawerActivity;
 import com.oval.app.activities.OvalLoginActivity;
-import com.oval.app.activities.OvalSearchActivity;
+
 
 import com.oval.app.adapters.SearchListAdapter;
 

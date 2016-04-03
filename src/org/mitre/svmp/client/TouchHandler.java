@@ -148,6 +148,6 @@ public class TouchHandler implements Constants {
 			activity.sendMessage(msg.build());
 			msg = null;
 		}
-		return false;
+		return true;
 	}
 }

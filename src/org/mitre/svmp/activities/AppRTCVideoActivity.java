@@ -214,9 +214,10 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 		Point displaySize = new Point();
 		displaySize.set(deviceDisplaySize.x, deviceDisplaySize.y * (16 / 9));
 
-		// displaySize.set(720, 1280);
+		 //displaySize.set(720, 3000);
 
 		vsv = new VideoStreamsView(this, displaySize, performanceAdapter);
+		
 		vsv.setPreserveEGLContextOnPause(true);
 		vsv.setBackgroundColor(Color.WHITE); // start this VideoStreamsView
 												// with a color of dark gray
@@ -238,8 +239,11 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 		keyHandler = new KeyHandler(this);
 		configHandler = new ConfigHandler(this);
 
-		AppRTCHelper.abortUnless(PeerConnectionFactory.initializeAndroidGlobals(this),
+		AppRTCHelper.abortUnless(PeerConnectionFactory.initializeAndroidGlobals(this, true, true, true, vsv.getContext()),
 				"Failed to initializeAndroidGlobals");
+		
+//		AppRTCHelper.abortUnless(PeerConnectionFactory.initializeAndroidGlobals(getApplicationContext()),
+//				"Failed to initializeAndroidGlobals");
 
 		// Create observers.
 		sdpObserver = new SDPObserver(this);
@@ -287,9 +291,11 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 
-				disconnectAndExit();
+			//	disconnectAndExit();
 			}
 		});
+		
+		
 
 		scrollUpImgVw.setOnClickListener(new View.OnClickListener() {
 
@@ -574,7 +580,7 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 			public void run() {
 				Log.d("UI thread", "I am the UI thread");
 				ll.setVisibility(View.VISIBLE);
-				scrollBtnsRLayout.setVisibility(View.VISIBLE);
+				scrollBtnsRLayout.setVisibility(View.GONE);
 			}
 		});
 	}
@@ -655,7 +661,8 @@ public class AppRTCVideoActivity extends AppRTCActivity {
 
 		Log.e(TAG, "on activity touch is finishing");
 
-		return touchHandler.onTouchEvent(ev);
+		 touchHandler.onTouchEvent(ev);
+		return touchHandler.sendTouchEvent();
 
 	}
 

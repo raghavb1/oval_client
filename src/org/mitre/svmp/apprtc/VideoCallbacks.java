@@ -70,6 +70,7 @@ public class VideoCallbacks implements VideoRenderer.Callbacks {
 
     @Override
     public void renderFrame(I420Frame frame) {
+//    	   view.setSize(stream, frame.width, frame.height);
         view.queueFrame(stream, frame);
     }
 }
