@@ -15,19 +15,19 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/searchbox"
         android:text="@string/my_apps_txt_vw"
-        android:textSize="14sp" 
-        android:layout_marginTop="10dp"
+        android:textSize="12sp" 
+        android:layout_marginTop="8dp"
         android:visibility="gone">
     </TextView>
 
     <GridView
         android:id="@+id/gridView1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@id/myAppsTv"
         android:columnWidth="100dp"
         android:gravity="center"
-        android:numColumns="auto_fit"
+        android:numColumns="4"
         android:stretchMode="columnWidth" >
     </GridView>
 

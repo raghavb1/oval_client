@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/splash_background" >
+
+    <LinearLayout
+        android:id="@+id/vsvLinear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#000000"
+        android:orientation="horizontal"
+        android:weightSum="1" >
+
+        <ImageView
+            android:id="@+id/homeStreamingBtn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight=".5"
+            android:src="@drawable/close_small" />
+
+        <TextView
+            android:id="@+id/pingTime"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight=".5"
+            android:text="pingTime"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" >
+        </TextView>
+    </LinearLayout>
+
+    <com.oval.app.vo.FrameRenderSurfaceVO
+        android:id="@+id/surfaceView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</RelativeLayout>

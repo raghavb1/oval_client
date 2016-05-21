@@ -28,27 +28,21 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mitre.svmp.activities.AppList;
-import org.mitre.svmp.activities.AppRTCRefreshAppsActivity;
-import org.mitre.svmp.activities.ConnectionList;
 import org.mitre.svmp.activities.SvmpActivity;
-import com.citicrowd.oval.R;
 import org.mitre.svmp.common.ConnectionInfo;
 
+import com.citicrowd.oval.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import com.oval.app.network.CustomSSLSocketFactory;
 import com.oval.app.network.HTTPServiceHandler;
 import com.oval.app.vo.LoginRequestVO;
 import com.oval.app.vo.LoginResultVO;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -236,13 +230,13 @@ public class OvalAccountApprovalActivity extends SvmpActivity implements OnClick
 
 		// create explicit intent
 		Intent intent = new Intent();
-		if (this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_QUICK
-				|| this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_FULL) {
-			// we're refreshing our cached list of apps that reside on the VM
-			intent.setClass(OvalAccountApprovalActivity.this, AppRTCRefreshAppsActivity.class);
-			if (this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_FULL)
-				intent.putExtra("fullRefresh", true);
-		}
+//		if (this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_QUICK
+//				|| this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_FULL) {
+//			// we're refreshing our cached list of apps that reside on the VM
+//			intent.setClass(OvalAccountApprovalActivity.this, AppRTCRefreshAppsActivity.class);
+//			if (this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_FULL)
+//				intent.putExtra("fullRefresh", true);
+//		}
 
 		intent.putExtra("connectionID", connectionInfo.getConnectionID());
 
@@ -251,35 +245,35 @@ public class OvalAccountApprovalActivity extends SvmpActivity implements OnClick
 
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
-		// TODO Auto-generated method stub
-		if (requestCode == AppList.REQUEST_REFRESHAPPS_QUICK || requestCode == AppList.REQUEST_REFRESHAPPS_FULL) {
-			if (responseCode == RESULT_CANCELED) {
-				// the activity ended before processing the Apps response
-				toastShort(R.string.appList_toast_refreshFail);
-			} else if (responseCode == RESULT_OK) {
-				toastShort(R.string.appList_toast_refreshSuccess);
-
-				super.onActivityResult(requestCode, RESULT_REPOPULATE, intent);
-
-				Intent i = new Intent(OvalAccountApprovalActivity.this, OvalDrawerActivity.class);
-				i.putExtra("connectionID", 0);
-				startActivity(i);
-				finish();
-			} else {
-				// this is probably a result of an AUTH_FAIL, let superclass
-				// handle it
-				super.onActivityResult(requestCode, responseCode, intent);
-			}
-		} else if (responseCode == RESULT_CANCELED && requestCode == AppList.REQUEST_STARTAPP_FINISH) {
-			// the user intentionally canceled the activity, and we are
-			// supposed to finish this activity after resuming
-			finish();
-		} else // fall back to superclass method
-			super.onActivityResult(requestCode, responseCode, intent);
-
-	}
+//	@Override
+//	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
+//		// TODO Auto-generated method stub
+//		if (requestCode == AppList.REQUEST_REFRESHAPPS_QUICK || requestCode == AppList.REQUEST_REFRESHAPPS_FULL) {
+//			if (responseCode == RESULT_CANCELED) {
+//				// the activity ended before processing the Apps response
+//				toastShort(R.string.appList_toast_refreshFail);
+//			} else if (responseCode == RESULT_OK) {
+//				toastShort(R.string.appList_toast_refreshSuccess);
+//
+//				super.onActivityResult(requestCode, RESULT_REPOPULATE, intent);
+//
+//				Intent i = new Intent(OvalAccountApprovalActivity.this, OvalDrawerActivity.class);
+//				i.putExtra("connectionID", 0);
+//				startActivity(i);
+//				finish();
+//			} else {
+//				// this is probably a result of an AUTH_FAIL, let superclass
+//				// handle it
+//				super.onActivityResult(requestCode, responseCode, intent);
+//			}
+//		} else if (responseCode == RESULT_CANCELED && requestCode == AppList.REQUEST_STARTAPP_FINISH) {
+//			// the user intentionally canceled the activity, and we are
+//			// supposed to finish this activity after resuming
+//			finish();
+//		} else // fall back to superclass method
+//			super.onActivityResult(requestCode, responseCode, intent);
+//
+//	}
 
 	private class AssignVMAsyncTask extends AsyncTask<String, String, String> {
 		@Override

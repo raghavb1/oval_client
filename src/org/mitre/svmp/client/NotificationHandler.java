@@ -15,21 +15,20 @@ limitations under the License.
 */
 package org.mitre.svmp.client;
 
-import android.app.TaskStackBuilder;
-import android.os.Build;
-import com.citicrowd.oval.R;
-
-
-import org.mitre.svmp.activities.ConnectionList;
 import org.mitre.svmp.protocol.SVMPProtocol;
+
+import com.citicrowd.oval.R;
+import com.oval.app.activities.VideoStreamingActivity;
 
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 
 /**
  * @author Joe Portner
@@ -41,7 +40,7 @@ public class NotificationHandler {
 
         // build intent (triggered when notification is selected)
         // Creates an explicit intent for the ConnectionList
-        Intent resultIntent = new Intent(context, ConnectionList.class);
+        Intent resultIntent = new Intent(context, VideoStreamingActivity.class);
         resultIntent.putExtra("connectionID", connectionID);
         PendingIntent resultPendingIntent;
 
@@ -52,7 +51,7 @@ public class NotificationHandler {
             // your application to the Home screen.
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
             // Adds the back stack for the Intent (but not the Intent itself)
-            stackBuilder.addParentStack(ConnectionList.class);
+            stackBuilder.addParentStack(VideoStreamingActivity.class);
             // Adds the Intent that starts the Activity to the top of the stack
             stackBuilder.addNextIntent(resultIntent);
             resultPendingIntent =  stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);

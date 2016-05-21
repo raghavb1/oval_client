@@ -1,27 +1,35 @@
 package com.oval.app.fragments;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mitre.svmp.activities.ConnectionList;
 import org.mitre.svmp.common.AppInfo;
 import org.mitre.svmp.common.ConnectionInfo;
 import org.mitre.svmp.common.Constants;
 import org.mitre.svmp.common.DatabaseHandler;
 
 import com.citicrowd.oval.R;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.oval.app.activities.OvalDrawerActivity;
+import com.oval.app.activities.VideoStreamingActivity;
 import com.oval.app.adapters.HomeGridAdapter;
+import com.oval.app.adapters.SearchListAdapter;
 import com.oval.app.network.HTTPServiceHandler;
+import com.oval.app.vo.AptoideSearchResultItemVo;
+import com.oval.app.vo.RawAptoideSearchResultVo;
 import com.oval.util.ConnectionDetector;
 import com.quinny898.library.persistentsearch.SearchBox;
-import com.quinny898.library.persistentsearch.SearchResult;
 import com.quinny898.library.persistentsearch.SearchBox.MenuListener;
 import com.quinny898.library.persistentsearch.SearchBox.SearchListener;
 import com.quinny898.library.persistentsearch.SearchBox.VoiceRecognitionListener;
+import com.quinny898.library.persistentsearch.SearchResult;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -40,7 +48,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ListView;
 
 public class OvalHomeFragment extends Fragment {
 
@@ -72,7 +79,7 @@ public class OvalHomeFragment extends Fragment {
 		connectionInfo = dbHandler.getConnectionInfo(1);
 
 	}
-	
+
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
@@ -90,33 +97,8 @@ public class OvalHomeFragment extends Fragment {
 
 		gridView = (GridView) rootView.findViewById(R.id.gridView1);
 
-		appsList = dbHandler.getAppInfoList_areUsed(1);
+		new SearchAsyncTask().execute("");
 
-		HomeGridAdapter adapter = new HomeGridAdapter(context, appsList);
-
-		gridView.setAdapter(adapter);
-		adapter.notifyDataSetChanged();
-
-		gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// TODO Auto-generated method stub
-
-				if (ConnectionDetector.isConnectingToInternet(context)) {
-
-					pos = position;
-
-					new AssignVMAsyncTask().execute();
-				} else {
-					Fragment fragment = new OvalNoInternetFragment();
-					FragmentManager fragmentManager = getFragmentManager();
-					fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).addToBackStack(OvalHomeFragment.TAG).commit();
-
-				}
-
-			}
-		});
 
 		search = (SearchBox) rootView.findViewById(R.id.searchbox);
 		search.setLogoText("Search App");
@@ -147,19 +129,19 @@ public class OvalHomeFragment extends Fragment {
 			}
 		});
 
-		search.setMenuListener(new MenuListener() {
-
-			@Override
-			public void onMenuClick() {
-				// Hamburger has been clicked
-				// Toast.makeText(OvalSearchActivity.this, "Menu click",
-				// Toast.LENGTH_LONG).show();
-
-				((OvalDrawerActivity) getActivity()).openDrawer();
-
-			}
-
-		});
+		//		search.setMenuListener(new MenuListener() {
+		//
+		//			@Override
+		//			public void onMenuClick() {
+		//				// Hamburger has been clicked
+		//				// Toast.makeText(OvalSearchActivity.this, "Menu click",
+		//				// Toast.LENGTH_LONG).show();
+		//
+		//				((OvalDrawerActivity) getActivity()).openDrawer();
+		//
+		//			}
+		//
+		//		});
 
 		search.setSearchListener(new SearchListener() {
 
@@ -284,7 +266,7 @@ public class OvalHomeFragment extends Fragment {
 	public void openApp(boolean isNew) {
 		// TODO Auto-generated method stub
 		AppInfo appinfo = appsList.get(pos);
-	/*	if (!isNew) {
+		/*	if (!isNew) {
 			Intent i = new Intent(context, ConnectionList.class);
 			i.setAction(Constants.ACTION_LAUNCH_APP);
 			i.putExtra("connectionID", 1);
@@ -292,20 +274,114 @@ public class OvalHomeFragment extends Fragment {
 			i.putExtra("pkgName", appinfo.getPackageName());
 			startActivity(i);
 		} else {*/
-			Intent intent = new Intent(context, ConnectionList.class);
-			intent.setAction(Constants.ACTION_LAUNCH_APP);
-			intent.putExtra("pkgName", appinfo.getPackageName());
-			intent.putExtra("connectionID", 1);
-			Uri.Builder builder = new Uri.Builder();
-			builder.scheme("http").authority("oval.co.in");
-			builder.appendQueryParameter("type", "downloadAndInstall");
-			builder.appendQueryParameter("packageName", appinfo.getPackageName());
-			
-			builder.appendQueryParameter("url",
-					 appinfo.getDownloadUrl());
-			intent.setData(builder.build());
-			context.startActivity(intent);
-//		}
+		Intent intent = new Intent(context, VideoStreamingActivity.class);
+		intent.setAction(Constants.ACTION_LAUNCH_APP);
+		intent.putExtra("pkgName", appinfo.getPackageName());
+		intent.putExtra("apkPath", appinfo.getPackageName());
+		intent.putExtra("connectionID", 1);
+		context.startActivity(intent);
+		//		}
 
+	}
+
+	private class SearchAsyncTask extends AsyncTask<String, String, String> {
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+
+			super.onPreExecute();
+			pDialog = new ProgressDialog(context);
+			pDialog.setMessage("Please wait...");
+			pDialog.setCancelable(false);
+			pDialog.show();
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+
+			HTTPServiceHandler httpServiceHandler = new HTTPServiceHandler(context);
+
+			List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
+
+			nameValuePair.add(new BasicNameValuePair("key", params[0]));
+
+			String jsonStr = httpServiceHandler.makeSecureServiceCall(
+					getResources().getString(R.string.services_prefix_url_aptoide), HTTPServiceHandler.GET,
+					nameValuePair);
+
+			Log.d(TAG, "Search Successful");
+			return jsonStr;
+
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			// TODO Auto-generated method stub
+
+			super.onPostExecute(result);
+
+			Type type = new TypeToken<RawAptoideSearchResultVo>() {
+			}.getType();
+			Gson gson = new Gson();
+			RawAptoideSearchResultVo rawAptoideSearchResultVo;
+			rawAptoideSearchResultVo = gson.fromJson(result, type);
+
+			pDialog.dismiss();
+			updateUI(rawAptoideSearchResultVo);
+
+		}
+	}
+
+	public void updateUI(RawAptoideSearchResultVo rawAptoideSearchResultVo) {
+
+		if (rawAptoideSearchResultVo != null) {
+			if (rawAptoideSearchResultVo.getSros() != null) {
+				for(int i=0; i< rawAptoideSearchResultVo.getSros().size(); i++){
+					AptoideSearchResultItemVo searchItem = rawAptoideSearchResultVo.getSros().get(i);
+
+					AppInfo appInfoTemp = dbHandler.getAppInfo(1, searchItem.getApkid());
+
+					AppInfo appinfo = new AppInfo(1, searchItem.getApkid(), searchItem.getName(), false, null, null, 0,
+							searchItem.getIconHd(), 1, searchItem.getAlternateUrl() != null ? searchItem.getAlternateUrl() : searchItem.getPath());
+					if(appInfoTemp == null){
+						dbHandler.insertAppInfo(appinfo);
+					}else{
+						dbHandler.updateAppInfo(appinfo);
+					}
+
+				}
+			}
+		}
+		updateGridUI();
+	}
+	
+	private void updateGridUI(){
+		appsList = dbHandler.getAppInfoList_All(1);
+
+		HomeGridAdapter adapter = new HomeGridAdapter(context, appsList);
+
+		gridView.setAdapter(adapter);
+		//adapter.notifyDataSetChanged();
+
+		gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// TODO Auto-generated method stub
+
+				if (ConnectionDetector.isConnectingToInternet(context)) {
+
+					pos = position;
+					openApp(true);
+					//					new AssignVMAsyncTask().execute();
+				} else {
+					Fragment fragment = new OvalNoInternetFragment();
+					FragmentManager fragmentManager = getFragmentManager();
+					fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).addToBackStack(OvalHomeFragment.TAG).commit();
+
+				}
+
+			}
+		});
 	}
 }

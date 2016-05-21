@@ -60,22 +60,23 @@ public class HomeGridAdapter extends BaseAdapter {
 
 			// set value into textview
 			
-			AppInfo gridItem= appsList.get(position);
-			
-			Holder holder = new Holder();
-			holder.appIconImageView = (ImageView) gridView.findViewById(R.id.appIconImageView);
-			holder.appName = (TextView) gridView.findViewById(R.id.appName);
-			holder.appRating = (TextView) gridView.findViewById(R.id.appRating);
 
-			holder.appName.setText(gridItem.getAppName());
-			
-			Picasso.with(context).load(gridItem.getIconUrl())
-
-			.into(holder.appIconImageView);
 
 		} else {
 			gridView = (View) convertView;
 		}
+		AppInfo gridItem= appsList.get(position);
+		
+		Holder holder = new Holder();
+		holder.appIconImageView = (ImageView) gridView.findViewById(R.id.appIconImageView);
+		holder.appName = (TextView) gridView.findViewById(R.id.appName);
+		holder.appRating = (TextView) gridView.findViewById(R.id.appRating);
+
+		holder.appName.setText(gridItem.getAppName());
+		
+		Picasso.with(context).load(gridItem.getIconUrl())
+
+		.into(holder.appIconImageView);
 
 		
 

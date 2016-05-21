@@ -16,20 +16,20 @@
 
 package org.mitre.svmp.apprtc;
 
-import android.os.AsyncTask;
-import android.os.Binder;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.util.Log;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.URI;
+import java.util.Date;
+import java.util.HashMap;
 
-import com.google.protobuf.InvalidProtocolBufferException;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLSocket;
 
-import de.tavendo.autobahn.WebSocket;
-import de.tavendo.autobahn.WebSocketConnection;
-import de.tavendo.autobahn.WebSocketException;
-import de.tavendo.autobahn.WebSocketOptions;
-
-import org.apache.http.*;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -44,27 +44,34 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mitre.svmp.common.SessionInfo;
-import org.mitre.svmp.net.SSLConfig;
-import org.mitre.svmp.performance.PerformanceTimer;
-import org.mitre.svmp.services.SessionService;
 import org.mitre.svmp.activities.AppRTCActivity;
 import org.mitre.svmp.auth.AuthData;
-import com.citicrowd.oval.R;
-import org.mitre.svmp.common.*;
-import org.mitre.svmp.protocol.SVMPProtocol.*;
+import org.mitre.svmp.common.ConnectionInfo;
+import org.mitre.svmp.common.Constants;
+import org.mitre.svmp.common.DatabaseHandler;
+import org.mitre.svmp.common.SessionInfo;
+import org.mitre.svmp.common.StateMachine;
 import org.mitre.svmp.common.StateMachine.STATE;
+import org.mitre.svmp.net.SSLConfig;
+import org.mitre.svmp.performance.PerformanceTimer;
+import org.mitre.svmp.protocol.SVMPProtocol.AuthResponse;
+import org.mitre.svmp.protocol.SVMPProtocol.Request;
+import org.mitre.svmp.protocol.SVMPProtocol.Response;
+import org.mitre.svmp.services.SessionService;
 
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLHandshakeException;
-import javax.net.ssl.SSLSocket;
+import com.citicrowd.oval.R;
+import com.google.protobuf.InvalidProtocolBufferException;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.Socket;
-import java.net.URI;
-import java.util.Date;
-import java.util.HashMap;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Binder;
+import android.os.HandlerThread;
+import android.util.Log;
+import android.widget.ImageView;
+import de.tavendo.autobahn.WebSocket;
+import de.tavendo.autobahn.WebSocketConnection;
+import de.tavendo.autobahn.WebSocketException;
+import de.tavendo.autobahn.WebSocketOptions;
 
 /**
  * @author Joe Portner
@@ -159,9 +166,9 @@ public class AppRTCClient extends Binder implements Constants {
         return performance;
     }
 
-    public AppRTCSignalingParameters getSignalingParams() {
-        return sessionInfo.getSignalingParams();
-    }
+//    public AppRTCSignalingParameters getSignalingParams() {
+//        return sessionInfo.getSignalingParams();
+//    }
 
     // called from AppRTCActivity
     public void changeToErrorState() {
@@ -253,7 +260,7 @@ public class AppRTCClient extends Binder implements Constants {
                     JSONObject webrtc = jsonResponse.getJSONObject("webrtc");
                     sessionInfo = new SessionInfo(token, expires, host, port, webrtc);
 
-                    if (sessionInfo.getSignalingParams() != null)
+//                    if (sessionInfo.getSignalingParams() != null)
                         returnVal = 0; // success
                 }
                 else if (responseCode == 403) { // "Forbidden", code for NEED_PASSWORD_CHANGE
@@ -473,7 +480,7 @@ public class AppRTCClient extends Binder implements Constants {
         public void onBinaryMessage(byte[] payload) {
             try {
                 Response data = Response.parseFrom(payload);
-                Log.d(TAG, "Received incoming message object of type " + data.getType().name());
+                //Log.d(TAG, "Received incoming message object of type " + data.getType().name());
                 onResponse(data);
             } catch (InvalidProtocolBufferException e) {
                 Log.e(TAG, "Unable to parse protobuf:", e);
@@ -517,7 +524,7 @@ public class AppRTCClient extends Binder implements Constants {
                     activity.onOpen();
 
                 // start taking performance measurements
-                performance.start();
+                //performance.start();
             }
             else // fail with the appropriate error message
                 machine.setState(STATE.ERROR, error);
@@ -526,7 +533,7 @@ public class AppRTCClient extends Binder implements Constants {
         // STEP 4: RUNNING
         private void onResponseRUNNING(final Response data) {
             boolean consumed = service.onMessage(data);
-            if (!consumed && isBound()) {
+            if (!consumed && isBound() && activity != null) {
                 activity.runOnUiThread(new Runnable() {
                     public void run() {
                         activity.onMessage(data);
@@ -535,4 +542,9 @@ public class AppRTCClient extends Binder implements Constants {
             }
         }
     };
+    
+    public void setImageView(ImageView imageView, Context context){
+    	service.getStreamHandler().imageView = imageView;
+    	service.getStreamHandler().context = context;
+    }
 }

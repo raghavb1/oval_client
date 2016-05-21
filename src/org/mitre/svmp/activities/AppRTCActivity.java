@@ -45,17 +45,36 @@
 
 package org.mitre.svmp.activities;
 
+import org.json.JSONObject;
+import org.mitre.svmp.apprtc.AppRTCClient;
+import org.mitre.svmp.apprtc.AppRTCHelper;
+import org.mitre.svmp.apprtc.MessageHandler;
+import org.mitre.svmp.common.ConnectionInfo;
+import org.mitre.svmp.common.Constants;
+import org.mitre.svmp.common.DatabaseHandler;
+import org.mitre.svmp.common.StateMachine.STATE;
+import org.mitre.svmp.common.StateObserver;
+import org.mitre.svmp.common.Utility;
+import org.mitre.svmp.performance.PerformanceAdapter;
+import org.mitre.svmp.protocol.SVMPProtocol.Request;
+import org.mitre.svmp.protocol.SVMPProtocol.Response;
+import org.mitre.svmp.services.SessionService;
+
+import com.citicrowd.oval.R;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.*;
+import android.content.ComponentName;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.*;
-import android.widget.ArrayAdapter;
+import android.view.Surface;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -63,19 +82,6 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ZoomControls;
-
-import org.json.JSONObject;
-import org.mitre.svmp.apprtc.*;
-import org.mitre.svmp.client.*;
-import org.mitre.svmp.common.*;
-import org.mitre.svmp.performance.PerformanceAdapter;
-import org.mitre.svmp.protocol.SVMPProtocol.Request;
-import org.mitre.svmp.protocol.SVMPProtocol.Response;
-import org.mitre.svmp.services.SessionService;
-import org.webrtc.*;
-import org.mitre.svmp.common.StateMachine.STATE;
-import com.citicrowd.oval.R;
 
 /**
  * @author Joe Portner Base activity for establishing an AppRTC connection
@@ -117,51 +123,51 @@ public class AppRTCActivity extends Activity implements StateObserver, MessageHa
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_apprtc);
-		getWindow().getDecorView().setBackgroundColor(Color.WHITE);
-
-		vsvProgrssBar = (ProgressBar) findViewById(R.id.vsvProgrssBar);
-
-		qualitySpinner = (Spinner) findViewById(R.id.qualitySpinner);
-
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.video_qualities,
-				android.R.layout.simple_spinner_item);
-
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-		qualitySpinner.setAdapter(adapter);
-
-		ll = (LinearLayout) findViewById(R.id.vsvLinear);
-		scrollBtnsRLayout=(RelativeLayout) findViewById(R.id.scrollBtnsRLayout);
-		
-		scrollUpImgVw=(ImageView) findViewById(R.id.scrollUpImgVw);
-		scrolldownImgVw=(ImageView) findViewById(R.id.scrolldownImgVw);
-	
-		preparingTextView = (TextView) findViewById(R.id.preparingTextView);
-		appLoadingImgVw = (ImageView) findViewById(R.id.appLoadingImgVw);
-		splashIcon=(ImageView) findViewById(R.id.splashIcon);
-
-		// lock the application to the natural "up" orientation of the physical
-		// device
-		// noinspection MagicConstant
+//		setContentView(R.layout.activity_apprtc);
+//		getWindow().getDecorView().setBackgroundColor(Color.WHITE);
+//
+//		vsvProgrssBar = (ProgressBar) findViewById(R.id.vsvProgrssBar);
+//
+//		qualitySpinner = (Spinner) findViewById(R.id.qualitySpinner);
+//
+//		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.video_qualities,
+//				android.R.layout.simple_spinner_item);
+//
+//		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//
+//		qualitySpinner.setAdapter(adapter);
+//
+//		ll = (LinearLayout) findViewById(R.id.vsvLinear);
+//		scrollBtnsRLayout=(RelativeLayout) findViewById(R.id.scrollBtnsRLayout);
+//		
+//		scrollUpImgVw=(ImageView) findViewById(R.id.scrollUpImgVw);
+//		scrolldownImgVw=(ImageView) findViewById(R.id.scrolldownImgVw);
+//	
+//		preparingTextView = (TextView) findViewById(R.id.preparingTextView);
+//		appLoadingImgVw = (ImageView) findViewById(R.id.appLoadingImgVw);
+//		splashIcon=(ImageView) findViewById(R.id.splashIcon);
+//
+//		// lock the application to the natural "up" orientation of the physical
+//		// device
+//		// noinspection MagicConstant
 		setRequestedOrientation(getDeviceDefaultOrientation());
-
+//
 		// connect to the database
 		dbHandler = new DatabaseHandler(this);
-
-		// adapter that helps record performance measurements
+//
+//		// adapter that helps record performance measurements
 		performanceAdapter = new PerformanceAdapter();
-
-		// Since the error-handling of this demo consists of throwing
-		// RuntimeExceptions and we assume that'll terminate the app, we install
-		// this default handler so it's applied to background threads as well.
-		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-			public void uncaughtException(Thread t, Throwable e) {
-				e.printStackTrace();
-				System.exit(-1);
-			}
-		});
-
+//
+//		// Since the error-handling of this demo consists of throwing
+//		// RuntimeExceptions and we assume that'll terminate the app, we install
+//		// this default handler so it's applied to background threads as well.
+//		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+//			public void uncaughtException(Thread t, Throwable e) {
+//				e.printStackTrace();
+//				System.exit(-1);
+//			}
+//		});
+//
 		// Get info passed to Intent
 		final Intent intent = getIntent();
 		connectionInfo = dbHandler.getConnectionInfo(intent.getIntExtra("connectionID", 1));
@@ -195,12 +201,12 @@ public class AppRTCActivity extends Activity implements StateObserver, MessageHa
 	}
 
 	// called from PCObserver
-	public MediaConstraints getPCConstraints() {
-		MediaConstraints value = null;
-		if (appRtcClient != null)
-			value = appRtcClient.getSignalingParams().pcConstraints;
-		return value;
-	}
+//	public MediaConstraints getPCConstraints() {
+//		MediaConstraints value = null;
+//		if (appRtcClient != null)
+//			value = appRtcClient.getSignalingParams().pcConstraints;
+//		return value;
+//	}
 
 	public void changeToErrorState() {
 		if (appRtcClient != null)
@@ -209,7 +215,7 @@ public class AppRTCActivity extends Activity implements StateObserver, MessageHa
 
 	protected void connectToRoom() {
 		logAndToast(R.string.appRTC_toast_connection_start);
-		startProgressDialog();
+		//startProgressDialog();
 
 		bindService(new Intent(this, SessionService.class), serviceConnection, 0);
 	}
@@ -263,16 +269,16 @@ public class AppRTCActivity extends Activity implements StateObserver, MessageHa
 	@Override
 	public void onPause() {
 		super.onPause();
-		if (proxying)
-			disconnectAndExit();
+//		if (proxying)
+//			disconnectAndExit();
 	}
 
 	public void onPause(boolean videoRunning) {
 		super.onPause();
-		if (!videoRunning) {
-			if (proxying)
-				disconnectAndExit();
-		}
+//		if (!videoRunning) {
+//			if (proxying)
+//				disconnectAndExit();
+//		}
 
 	}
 

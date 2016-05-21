@@ -16,8 +16,6 @@ limitations under the License.
 package org.mitre.svmp.common;
 
 import org.json.JSONObject;
-import org.mitre.svmp.apprtc.AppRTCHelper;
-import org.mitre.svmp.apprtc.AppRTCSignalingParameters;
 
 /**
  * Contains session-related information obtained from the SVMP Overseer
@@ -30,7 +28,7 @@ public class SessionInfo {
     private String host;
     private String port;
     private JSONObject webrtc;
-    private AppRTCSignalingParameters signalingParams;
+//    private AppRTCSignalingParameters signalingParams;
 
     public SessionInfo(String token, long expires, String host, String port, JSONObject webrtc) {
         this.token = token;
@@ -38,7 +36,7 @@ public class SessionInfo {
         this.host = host;
         this.port = port;
         this.webrtc = webrtc;
-        this.signalingParams = AppRTCHelper.getParametersForRoom(webrtc);
+//        this.signalingParams = AppRTCHelper.getParametersForRoom(webrtc);
     }
 
     public String getToken() {
@@ -61,7 +59,7 @@ public class SessionInfo {
         return webrtc;
     }
 
-    public AppRTCSignalingParameters getSignalingParams() {
-        return signalingParams;
-    }
+//    public AppRTCSignalingParameters getSignalingParams() {
+//        return signalingParams;
+//    }
 }

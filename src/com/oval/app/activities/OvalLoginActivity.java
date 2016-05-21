@@ -28,18 +28,13 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mitre.svmp.activities.AppList;
-import org.mitre.svmp.activities.AppRTCRefreshAppsActivity;
-import org.mitre.svmp.activities.AppRTCVideoActivity;
 import org.mitre.svmp.activities.SvmpActivity;
-import com.citicrowd.oval.R;
 import org.mitre.svmp.common.ConnectionInfo;
 
-import com.google.android.gms.auth.GoogleAuthUtil;
+import com.citicrowd.oval.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.Scopes;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -66,15 +61,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class OvalLoginActivity extends SvmpActivity
-		implements OnClickListener, ConnectionCallbacks, OnConnectionFailedListener {
+implements OnClickListener, ConnectionCallbacks, OnConnectionFailedListener {
 
 	private static final int RC_SIGN_IN = 0;
 	// Logcat tag
@@ -214,37 +204,11 @@ public class OvalLoginActivity extends SvmpActivity
 			if (!mGoogleApiClient.isConnecting()) {
 				mGoogleApiClient.connect();
 			}
-		} else {
-
-			busy = false;
-			if (requestCode == AppList.REQUEST_REFRESHAPPS_QUICK || requestCode == AppList.REQUEST_REFRESHAPPS_FULL) {
-				if (responseCode == RESULT_CANCELED) {
-					// the activity ended before processing the Apps response
-					toastShort(R.string.appList_toast_refreshFail);
-				} else if (responseCode == RESULT_OK) {
-					toastShort(R.string.appList_toast_refreshSuccess);
-
-					super.onActivityResult(requestCode, RESULT_REPOPULATE, intent);
-
-					Intent i = new Intent(OvalLoginActivity.this, OvalDrawerActivity.class);
-					i.putExtra("connectionID", 0);
-					startActivity(i);
-					finish();
-				} else {
-					// this is probably a result of an AUTH_FAIL, let superclass
-					// handle it
-					super.onActivityResult(requestCode, responseCode, intent);
-				}
-			} else if (responseCode == RESULT_CANCELED && requestCode == AppList.REQUEST_STARTAPP_FINISH) {
-				// the user intentionally canceled the activity, and we are
-				// supposed to finish this activity after resuming
-				finish();
-			} else // fall back to superclass method
-				super.onActivityResult(requestCode, responseCode, intent);
-
-		}
+		}else // fall back to superclass method
+			super.onActivityResult(requestCode, responseCode, intent);
 
 	}
+
 
 	@Override
 	public void onConnected(Bundle arg0) {
@@ -324,8 +288,8 @@ public class OvalLoginActivity extends SvmpActivity
 				SSLSocketFactory sslFactory = new CustomSSLSocketFactory(
 						CustomSSLSocketFactory.getKeyStoreForCertificate(
 								getApplicationContext().getResources().getAssets().open("new_server.crt")));
-								// sslFactory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-								// to be used in case of bypassing certificates
+				// sslFactory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+				// to be used in case of bypassing certificates
 
 				// Enable HTTP parameters */
 				HttpParams params4 = new BasicHttpParams();
@@ -422,8 +386,8 @@ public class OvalLoginActivity extends SvmpActivity
 				SSLSocketFactory sslFactory = new CustomSSLSocketFactory(
 						CustomSSLSocketFactory.getKeyStoreForCertificate(
 								getApplicationContext().getResources().getAssets().open("new_server.crt")));
-								// sslFactory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-								// to be used in case of bypassing certificates
+				// sslFactory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+				// to be used in case of bypassing certificates
 
 				// Enable HTTP parameters */
 				HttpParams params4 = new BasicHttpParams();
@@ -540,14 +504,14 @@ public class OvalLoginActivity extends SvmpActivity
 		}
 	}
 
-	private void refreshApps(ConnectionInfo connectionInfo) {
-		// TODO Auto-generated method stub
-
-		this.sendRequestCode = AppList.REQUEST_REFRESHAPPS_FULL;
-		authPrompt(connectionInfo); // utilizes "startActivityForResult", which
-									// uses this.sendRequestCode
-
-	}
+//	private void refreshApps(ConnectionInfo connectionInfo) {
+//		// TODO Auto-generated method stub
+//
+//		this.sendRequestCode = AppList.REQUEST_REFRESHAPPS_FULL;
+//		authPrompt(connectionInfo); // utilizes "startActivityForResult", which
+//		// uses this.sendRequestCode
+//
+//	}
 
 	@Override
 	protected void afterStartAppRTC(ConnectionInfo connectionInfo) {
@@ -556,13 +520,13 @@ public class OvalLoginActivity extends SvmpActivity
 
 		// create explicit intent
 		Intent intent = new Intent();
-		if (this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_QUICK
-				|| this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_FULL) {
-			// we're refreshing our cached list of apps that reside on the VM
-			intent.setClass(OvalLoginActivity.this, AppRTCRefreshAppsActivity.class);
-			if (this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_FULL)
-				intent.putExtra("fullRefresh", true);
-		}
+//		if (this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_QUICK
+//				|| this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_FULL) {
+//			// we're refreshing our cached list of apps that reside on the VM
+//			intent.setClass(OvalLoginActivity.this, AppRTCRefreshAppsActivity.class);
+//			if (this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_FULL)
+//				intent.putExtra("fullRefresh", true);
+//		}
 
 		intent.putExtra("connectionID", connectionInfo.getConnectionID());
 
@@ -574,6 +538,7 @@ public class OvalLoginActivity extends SvmpActivity
 	/**
 	 * Fetching user's information name, email, profile pic
 	 */
+	@SuppressWarnings("deprecation")
 	private void getProfileInformation() {
 		try {
 			if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
@@ -622,11 +587,11 @@ public class OvalLoginActivity extends SvmpActivity
 			// Signin button clicked
 			signInWithGplus();
 			break;
-		/*
-		 * case R.id.btn_sign_out: // Signout button clicked signOutFromGplus();
-		 * break; case R.id.btn_revoke_access: // Revoke access button clicked
-		 * revokeGplusAccess(); break;
-		 */
+			/*
+			 * case R.id.btn_sign_out: // Signout button clicked signOutFromGplus();
+			 * break; case R.id.btn_revoke_access: // Revoke access button clicked
+			 * revokeGplusAccess(); break;
+			 */
 		}
 	}
 

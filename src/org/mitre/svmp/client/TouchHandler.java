@@ -15,15 +15,14 @@
  */
 package org.mitre.svmp.client;
 
-import org.mitre.svmp.activities.AppRTCActivity;
-import org.mitre.svmp.activities.AppRTCVideoActivity;
 import org.mitre.svmp.common.Constants;
 import org.mitre.svmp.performance.PerformanceAdapter;
 import org.mitre.svmp.protocol.SVMPProtocol;
 import org.mitre.svmp.protocol.SVMPProtocol.Request.RequestType;
 
+import com.oval.app.activities.RTCActivity;
+
 import android.graphics.Point;
-import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -35,14 +34,14 @@ public class TouchHandler implements Constants {
 
 	private static final String TAG = "Touch Handler";
 
-	private AppRTCVideoActivity activity;
+	private RTCActivity activity;
 	private PerformanceAdapter spi;
 	private Point displaySize;
 
 	private float xScaleFactor, yScaleFactor = 0;
 	private boolean gotScreenInfo = false;
 
-	public TouchHandler(AppRTCVideoActivity activity, Point displaySize, PerformanceAdapter spi) {
+	public TouchHandler(RTCActivity activity, Point displaySize, PerformanceAdapter spi) {
 		this.activity = activity;
 		this.displaySize = displaySize;
 		this.spi = spi;
@@ -73,19 +72,18 @@ public class TouchHandler implements Constants {
 		return true;
 	}
 
-	SVMPProtocol.Request.Builder msg = null;
 
 	public boolean onTouchEvent(final MotionEvent event) {
 		if (!activity.isConnected() || !gotScreenInfo)
 			return false;
 
 		// increment the touch update count for performance measurement
-		spi.incrementTouchUpdates();
+		//		spi.incrementTouchUpdates();
 
 		// Create Protobuf message builders
-		if (msg == null) {
-			msg = SVMPProtocol.Request.newBuilder();
-		}
+
+		SVMPProtocol.Request.Builder msg =SVMPProtocol.Request.newBuilder();
+
 		SVMPProtocol.TouchEvent.Builder eventmsg = SVMPProtocol.TouchEvent.newBuilder();
 		SVMPProtocol.TouchEvent.PointerCoords.Builder p = SVMPProtocol.TouchEvent.PointerCoords.newBuilder();
 		SVMPProtocol.TouchEvent.HistoricalEvent.Builder h = SVMPProtocol.TouchEvent.HistoricalEvent.newBuilder();
@@ -99,17 +97,19 @@ public class TouchHandler implements Constants {
 		// Loop and set pointer/coordinate information
 		final int pointerCount = event.getPointerCount();
 
-		Log.i(TAG + event, event.toString());
+		//Log.i(TAG + event, event.toString());
 		for (int i = 0; i < pointerCount; i++) {
 			final float adjX = event.getX(i) * this.xScaleFactor;
 			final float adjY = event.getY(i) * this.yScaleFactor;
 			p.clear();
 			p.setId(event.getPointerId(i));
-			Log.i(TAG + "set pointer- pointer id", event.getPointerId(i) + "");
+			//			Log.i(TAG + "set pointer- pointer id", event.getPointerId(i) + "");
 			p.setX(adjX);
-			Log.i(TAG + "set pointer - adjx", adjX + "");
+			//			Log.i(TAG + "set pointer - adjx", adjX + "");
 			p.setY(adjY);
-			Log.i(TAG + "set pointer - adjy", adjY + "");
+			p.setPressure(event.getPressure(event.getPointerId(i)));
+			p.setSize(event.getPressure(event.getPointerId(i)));
+			//			Log.i(TAG + "set pointer - adjy", adjY + "");
 			eventmsg.addItems(p.build());
 		}
 
@@ -120,11 +120,14 @@ public class TouchHandler implements Constants {
 			for (int j = 0; j < pointerCount; j++) {
 				p.clear();
 				p.setId(event.getPointerId(j));
-				Log.i(TAG + "set historical - pointer id", event.getPointerId(j) + "");
+				//				Log.i(TAG + "set historical - pointer id", event.getPointerId(j) + "");
 				p.setX(event.getHistoricalX(j, i) * this.xScaleFactor);
-				Log.i(TAG + "set historical -  x", event.getHistoricalX(j, i) * this.xScaleFactor + "");
+				//				Log.i(TAG + "set historical -  x", event.getHistoricalX(j, i) * this.xScaleFactor + "");
 				p.setY(event.getHistoricalY(j, i) * this.yScaleFactor);
-				Log.i(TAG + "set historical -  y", event.getHistoricalY(j, i) * this.yScaleFactor + "");
+				//				Log.i(TAG + "set historical -  y", event.getHistoricalY(j, i) * this.yScaleFactor + "");
+				p.setPressure(event.getPressure(event.getPointerId(j)));
+				p.setSize(event.getPressure(event.getPointerId(j)));
+				
 				h.addCoords(p.build());
 			}
 			h.setEventTime(event.getHistoricalEventTime(i));
@@ -137,17 +140,10 @@ public class TouchHandler implements Constants {
 
 		// Send touch event to VM
 
-		// activity.sendMessage(msg.build());
+		activity.sendMessage(msg.build());
 
 		return true;
 	}
 
-	public boolean sendTouchEvent() {
 
-		if (msg != null) {
-			activity.sendMessage(msg.build());
-			msg = null;
-		}
-		return true;
-	}
 }

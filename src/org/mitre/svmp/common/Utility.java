@@ -15,12 +15,26 @@
  */
 package org.mitre.svmp.common;
 
+import org.mitre.svmp.protocol.SVMPProtocol.LocationProviderEnabled;
+import org.mitre.svmp.protocol.SVMPProtocol.LocationProviderInfo;
+import org.mitre.svmp.protocol.SVMPProtocol.LocationProviderStatus;
+import org.mitre.svmp.protocol.SVMPProtocol.LocationRequest;
+import org.mitre.svmp.protocol.SVMPProtocol.LocationUpdate;
+import org.mitre.svmp.protocol.SVMPProtocol.Request;
+import org.mitre.svmp.protocol.SVMPProtocol.RotationInfo;
+
+import com.citicrowd.oval.R;
+import com.oval.app.activities.VideoStreamingActivity;
+
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -28,15 +42,6 @@ import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import org.mitre.svmp.activities.AppList;
-import com.citicrowd.oval.R;
-import org.mitre.svmp.protocol.SVMPProtocol.LocationRequest;
-import org.mitre.svmp.protocol.SVMPProtocol.LocationUpdate;
-import org.mitre.svmp.protocol.SVMPProtocol.LocationProviderInfo;
-import org.mitre.svmp.protocol.SVMPProtocol.LocationProviderEnabled;
-import org.mitre.svmp.protocol.SVMPProtocol.LocationProviderStatus;
-import org.mitre.svmp.protocol.SVMPProtocol.RotationInfo;
-import org.mitre.svmp.protocol.SVMPProtocol.Request;
 
 /**
  * @author David Schoenheit, Joe Portner
@@ -107,7 +112,7 @@ public class Utility {
     }
     private static Intent getShortcutIntent(Context context, AppInfo appInfo) {
         // this intent defines the shortcut behavior (launch activity, action, extras)
-        Intent launchIntent = new Intent(context, AppList.class);
+        Intent launchIntent = new Intent(context, VideoStreamingActivity.class);
         launchIntent.setAction(Constants.ACTION_LAUNCH_APP);
         launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK); // when this is started, clear other SVMP activities
         launchIntent.putExtra("connectionID", appInfo.getConnectionID());

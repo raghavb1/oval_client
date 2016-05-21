@@ -15,6 +15,13 @@ limitations under the License.
 */
 package org.mitre.svmp.client;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.mitre.svmp.protocol.SVMPProtocol;
+
+import com.citicrowd.oval.R;
+import com.oval.app.activities.RTCActivity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,18 +30,6 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
-import com.citicrowd.oval.R;
-import com.oval.app.activities.OvalAccountApprovalActivity;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.mitre.svmp.activities.AppList;
-import org.mitre.svmp.activities.AppRTCVideoActivity;
-import org.mitre.svmp.activities.ConnectionList;
-import org.mitre.svmp.common.AppInfo;
-import org.mitre.svmp.common.Constants;
-import org.mitre.svmp.common.DatabaseHandler;
-import org.mitre.svmp.protocol.SVMPProtocol;
 
 /**
  * @author Joe Portner Receives Intents from the server to act upon on the
@@ -112,7 +107,7 @@ public class IntentHandler {
 		 * null) { appInfo.setIsInstalled(1); dbHandler.updateAppInfo(appInfo);
 		 */
 
-		Intent i = new Intent(context, AppRTCVideoActivity.class);
+		Intent i = new Intent(context, RTCActivity.class);
 		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		i.putExtra("pkgName", packageName);
 		

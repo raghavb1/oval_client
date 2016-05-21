@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import org.mitre.svmp.activities.AppList;
 import org.mitre.svmp.activities.AppRTCRefreshAppsActivity;
 import org.mitre.svmp.activities.SvmpActivity;
 import org.mitre.svmp.common.ConnectionInfo;
@@ -216,7 +215,7 @@ public class OvalDrawerActivity extends SvmpActivity {
 			break;
 		case 1:
 			// fragment = new OvalSearchFragment();
-			refreshApps(connectionInfo);
+			//refreshApps(connectionInfo);
 
 			// clearApplicationData();
 			break;
@@ -252,36 +251,9 @@ public class OvalDrawerActivity extends SvmpActivity {
 	 * onPostCreate() and onConfigurationChanged()...
 	 */
 
-	private void refreshApps(ConnectionInfo connectionInfo) {
-		// TODO Auto-generated method stub
 
-		this.sendRequestCode = AppList.REQUEST_REFRESHAPPS_FULL;
-		authPrompt(connectionInfo); // utilizes "startActivityForResult", which
-									// uses this.sendRequestCode
 
-	}
 
-	@Override
-	protected void afterStartAppRTC(ConnectionInfo connectionInfo) {
-		// after we have handled the auth prompt and made sure the service is
-		// started...
-
-		// create explicit intent
-		Intent intent = new Intent();
-		if (this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_QUICK
-				|| this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_FULL) {
-			// we're refreshing our cached list of apps that reside on the VM
-			intent.setClass(OvalDrawerActivity.this, AppRTCRefreshAppsActivity.class);
-			if (this.sendRequestCode == AppList.REQUEST_REFRESHAPPS_FULL)
-				intent.putExtra("fullRefresh", true);
-		}
-
-		intent.putExtra("connectionID", connectionInfo.getConnectionID());
-
-		// start the AppRTCActivity
-		startActivityForResult(intent, this.sendRequestCode);
-
-	}
 
 	public void startSearchFragment(String searchStr) {
 
@@ -302,38 +274,7 @@ public class OvalDrawerActivity extends SvmpActivity {
 		}
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
-		// TODO Auto-generated method stub
 
-		busy = false;
-		if (requestCode == AppList.REQUEST_REFRESHAPPS_QUICK || requestCode == AppList.REQUEST_REFRESHAPPS_FULL) {
-			if (responseCode == RESULT_CANCELED) {
-				// the activity ended before processing the Apps response
-				toastShort(R.string.appList_toast_refreshFail);
-			} else if (responseCode == RESULT_OK) {
-				toastShort(R.string.appList_toast_refreshSuccess);
-
-				super.onActivityResult(requestCode, RESULT_REPOPULATE, intent);
-
-				/*
-				 * Intent i = new Intent(DrawerHomeActivity.this,
-				 * DrawerHomeActivity.class); i.putExtra("connectionID", 0);
-				 * startActivity(i); finish();
-				 */
-			} else {
-				// this is probably a result of an AUTH_FAIL, let superclass
-				// handle it
-				super.onActivityResult(requestCode, responseCode, intent);
-			}
-		} else if (responseCode == RESULT_CANCELED && requestCode == AppList.REQUEST_STARTAPP_FINISH) {
-			// the user intentionally canceled the activity, and we are
-			// supposed to finish this activity after resuming
-			finish();
-		} else // fall back to superclass method
-			super.onActivityResult(requestCode, responseCode, intent);
-
-	}
 
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {

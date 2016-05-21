@@ -1,28 +1,19 @@
 package com.oval.app.adapters;
 
 import java.util.List;
-import java.util.StringTokenizer;
 
-import org.mitre.svmp.activities.ConnectionList;
-import org.mitre.svmp.client.SendNetIntent;
-import org.mitre.svmp.common.AppInfo;
-import org.mitre.svmp.common.Constants;
 import org.mitre.svmp.common.DatabaseHandler;
 
 import com.citicrowd.oval.R;
 import com.oval.app.vo.AptoideSearchResultItemVo;
-import com.oval.app.vo.SearchResultItemVO;
 import com.squareup.picasso.Picasso;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 

@@ -9,7 +9,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mitre.svmp.activities.ConnectionList;
 import org.mitre.svmp.common.AppInfo;
 import org.mitre.svmp.common.ConnectionInfo;
 import org.mitre.svmp.common.Constants;
@@ -19,21 +18,17 @@ import com.citicrowd.oval.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.oval.app.activities.OvalDrawerActivity;
-import com.oval.app.activities.OvalLoginActivity;
-
-
+import com.oval.app.activities.VideoStreamingActivity;
 import com.oval.app.adapters.SearchListAdapter;
-
 import com.oval.app.network.HTTPServiceHandler;
 import com.oval.app.vo.AptoideSearchResultItemVo;
 import com.oval.app.vo.RawAptoideSearchResultVo;
-import com.oval.app.vo.RawSearchResultVO;
 import com.oval.util.ConnectionDetector;
 import com.quinny898.library.persistentsearch.SearchBox;
-import com.quinny898.library.persistentsearch.SearchResult;
 import com.quinny898.library.persistentsearch.SearchBox.MenuListener;
 import com.quinny898.library.persistentsearch.SearchBox.SearchListener;
 import com.quinny898.library.persistentsearch.SearchBox.VoiceRecognitionListener;
+import com.quinny898.library.persistentsearch.SearchResult;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -42,7 +37,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -110,8 +104,8 @@ public class OvalSearchFragment extends Fragment {
 					if (ConnectionDetector.isConnectingToInternet(context)) {
 
 						pos = position;
-
-						new AssignVMAsyncTask().execute();
+						openApp(true);
+//						new AssignVMAsyncTask().execute();
 					} else {
 						launchNointernetFragment();
 					}
@@ -270,16 +264,17 @@ public class OvalSearchFragment extends Fragment {
 
 			}
 
-			Intent intent = new Intent(context, ConnectionList.class);
+			Intent intent = new Intent(context, VideoStreamingActivity.class);
 			intent.setAction(Constants.ACTION_LAUNCH_APP);
 			intent.putExtra("pkgName", searchItem.getApkid());
+			intent.putExtra("apkPath", downloadUrl);
 			intent.putExtra("connectionID", 1);
-			Uri.Builder builder = new Uri.Builder();
-			builder.scheme("http").authority("oval.co.in");
-			builder.appendQueryParameter("type", "downloadAndInstall");
-			builder.appendQueryParameter("packageName", searchItem.getApkid());
-			builder.appendQueryParameter("url", downloadUrl);
-			intent.setData(builder.build());
+//			Uri.Builder builder = new Uri.Builder();
+//			builder.scheme("http").authority("oval.co.in");
+//			builder.appendQueryParameter("type", "downloadAndInstall");
+//			builder.appendQueryParameter("pkgName", searchItem.getApkid());
+//			builder.appendQueryParameter("apkPath", downloadUrl);
+//			intent.setData(builder.build());
 			context.startActivity(intent);
 
 		}

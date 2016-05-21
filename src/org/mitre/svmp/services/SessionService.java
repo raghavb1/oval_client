@@ -15,29 +15,47 @@
  */
 package org.mitre.svmp.services;
 
-import android.app.*;
+import java.io.IOException;
+import java.util.zip.DataFormatException;
+
+import org.mitre.svmp.apprtc.AppRTCClient;
+import org.mitre.svmp.apprtc.MessageHandler;
+import org.mitre.svmp.client.IntentHandler;
+import org.mitre.svmp.client.LocationHandler;
+import org.mitre.svmp.client.NotificationHandler;
+import org.mitre.svmp.client.SensorHandler;
+import org.mitre.svmp.client.StreamHandler;
+import org.mitre.svmp.common.ConnectionInfo;
+import org.mitre.svmp.common.Constants;
+import org.mitre.svmp.common.DatabaseHandler;
+import org.mitre.svmp.common.StateMachine;
+import org.mitre.svmp.common.StateMachine.STATE;
+import org.mitre.svmp.common.StateObserver;
+import org.mitre.svmp.common.Utility;
+import org.mitre.svmp.performance.PerformanceAdapter;
+import org.mitre.svmp.protocol.SVMPProtocol;
+import org.mitre.svmp.protocol.SVMPProtocol.AuthResponse.AuthResponseType;
+import org.mitre.svmp.protocol.SVMPProtocol.Response;
+
+import com.citicrowd.oval.R;
+import com.oval.app.activities.VideoStreamingActivity;
+
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.os.*;
+import android.os.Build;
+import android.os.Handler;
+import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
-
-import org.mitre.svmp.activities.ConnectionList;
-import org.mitre.svmp.apprtc.AppRTCClient;
-import org.mitre.svmp.apprtc.MessageHandler;
-import org.mitre.svmp.client.*;
-import org.mitre.svmp.common.*;
-import org.mitre.svmp.common.StateMachine.STATE;
-import org.mitre.svmp.performance.PerformanceAdapter;
-import org.mitre.svmp.protocol.SVMPProtocol;
-import org.mitre.svmp.protocol.SVMPProtocol.AuthResponse.AuthResponseType;
-import org.mitre.svmp.protocol.SVMPProtocol.Response;
-import com.citicrowd.oval.R;
-import com.oval.app.activities.OvalDrawerActivity;
 
 /**
  * @author Joe Portner
@@ -83,6 +101,7 @@ public class SessionService extends Service implements StateObserver, MessageHan
     // client components
     private LocationHandler locationHandler;
     private SensorHandler sensorHandler;
+    private StreamHandler streamHandler;
 
     @Override
     public void onCreate() {
@@ -151,6 +170,8 @@ public class SessionService extends Service implements StateObserver, MessageHan
 
         // create a sensor handler object
         sensorHandler = new SensorHandler(this, performanceAdapter);
+        
+        streamHandler = new StreamHandler(this);
 
         // show notification
         showNotification(true);
@@ -209,7 +230,7 @@ public class SessionService extends Service implements StateObserver, MessageHan
                 .setOngoing(true);
 
         // Creates an explicit intent for the ConnectionList
-        Intent resultIntent = new Intent(this, ConnectionList.class);
+        Intent resultIntent = new Intent(this, VideoStreamingActivity.class);
 //        resultIntent.putExtra("connectionID", connectionInfo.getConnectionID());
         PendingIntent resultPendingIntent;
 
@@ -220,7 +241,7 @@ public class SessionService extends Service implements StateObserver, MessageHan
             // your application to the Home screen.
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
             // Adds the back stack for the Intent (but not the Intent itself)
-            stackBuilder.addParentStack(ConnectionList.class);
+            stackBuilder.addParentStack(VideoStreamingActivity.class);
             // Adds the Intent that starts the Activity to the top of the stack
             stackBuilder.addNextIntent(resultIntent);
             resultPendingIntent =  stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -273,6 +294,9 @@ public class SessionService extends Service implements StateObserver, MessageHan
     public boolean onMessage(Response data) {
         boolean consumed = true;
         switch (data.getType()) {
+        	case STREAM:
+        		consumed = false;
+        		break;
             case AUTH:
                 AuthResponseType type = data.getAuthResponse().getType();
                 if (type == AuthResponseType.SESSION_MAX_TIMEOUT) {
@@ -314,10 +338,11 @@ public class SessionService extends Service implements StateObserver, MessageHan
                 NotificationHandler.inspect(data, SessionService.this, getConnectionID());
                 break;
             case PING:
-                long endDate = System.currentTimeMillis(); // immediately get end date
-                if (data.hasPingResponse())
-                    performanceAdapter.setPing(data.getPingResponse().getStartDate(), endDate);
-                break;
+//                long endDate = System.currentTimeMillis(); // immediately get end date
+//                System.out.println("recieved ping message at "+System.currentTimeMillis());
+//                if (data.hasPingResponse())
+//                    performanceAdapter.setPing(data.getPingResponse().getStartDate(), endDate);
+//                break;
             case APPS:
                 consumed = false; // pass this message on to the activity message handler
                 break;
@@ -345,6 +370,10 @@ public class SessionService extends Service implements StateObserver, MessageHan
     public void onSensorChanged(SensorEvent event) {
         if (getState() == STATE.RUNNING)
             sensorHandler.onSensorChanged(event);
+    }
+    
+    public StreamHandler getStreamHandler(){
+    	return streamHandler;
     }
 
     private void doToast(final int resID) {

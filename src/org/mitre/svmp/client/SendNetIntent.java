@@ -17,9 +17,7 @@ package org.mitre.svmp.client;
 
 //<<<<<<< HEAD
 import org.mitre.svmp.activities.AppRTCActivity;
-import org.mitre.svmp.activities.AppRTCVideoActivity;
 import org.mitre.svmp.common.AppInfo;
-import org.mitre.svmp.common.ConnectionInfo;
 import org.mitre.svmp.common.DatabaseHandler;
 //=======
 //>>>>>>> branch 'master' of https://github.com/raghavb1/oval-client-android
@@ -29,14 +27,10 @@ import org.mitre.svmp.protocol.SVMPProtocol.IntentAction;
 import org.mitre.svmp.protocol.SVMPProtocol.Request.RequestType;
 import org.mitre.svmp.services.SessionService;
 
-import com.citicrowd.oval.R;
 import com.squareup.picasso.Picasso;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 
 public class SendNetIntent extends AppRTCActivity {
 	private SessionService service;

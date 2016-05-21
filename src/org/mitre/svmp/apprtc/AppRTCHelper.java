@@ -44,19 +44,15 @@
  */
 package org.mitre.svmp.apprtc;
 
-import android.util.Log;
-import org.json.JSONArray;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mitre.svmp.protocol.SVMPProtocol.Request;
-import org.mitre.svmp.protocol.SVMPProtocol.VideoStreamInfo;
 import org.mitre.svmp.protocol.SVMPProtocol.WebRTCMessage;
-import org.webrtc.MediaConstraints;
-import org.webrtc.PeerConnection.IceServer;
 
-import java.util.LinkedList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import android.util.Log;
 
 /**
  * @author Joe Portner
@@ -96,23 +92,7 @@ public class AppRTCHelper {
         }
     }
 
-    public static AppRTCSignalingParameters getParametersForRoom(JSONObject jsonObject) {
-        AppRTCSignalingParameters value = null;
 
-        try {
-            MediaConstraints pcConstraints = constraintsFromJSON(jsonObject.getJSONObject("pc"));
-            Log.d(TAG, "pc constraints: " + pcConstraints);
-
-            MediaConstraints videoConstraints = constraintsFromJSON(jsonObject.getJSONObject("video"));
-            Log.d(TAG, "video constraints: " + videoConstraints);
-
-            LinkedList<IceServer> iceServers = iceServersFromPCConfigJSON(jsonObject.getJSONArray("ice_servers"));
-            value = new AppRTCSignalingParameters(iceServers, true, pcConstraints, videoConstraints);
-        } catch (JSONException e) {
-            Log.e(TAG, "getParametersForRoom failed:", e);
-        }
-        return value;
-    }
 
     // Mangle SDP to prefer ISAC/16000 over any other audio codec.
     public static String preferISAC(String sdpDescription) {
@@ -163,57 +143,5 @@ public class AppRTCHelper {
         return newSdpDescription.toString();
     }
 
-    private static MediaConstraints constraintsFromJSON(JSONObject jsonObject) {
-        MediaConstraints constraints = new MediaConstraints();
-        try {
-            JSONObject mandatoryJSON = jsonObject.optJSONObject("mandatory");
-            if (mandatoryJSON != null) {
-                JSONArray mandatoryKeys = mandatoryJSON.names();
-                if (mandatoryKeys != null) {
-                    for (int i = 0; i < mandatoryKeys.length(); ++i) {
-                        String key = mandatoryKeys.getString(i);
-                        String value = mandatoryJSON.getString(key);
-                        constraints.mandatory.add(
-                                new MediaConstraints.KeyValuePair(key, value));
-                    }
-                }
-            }
-            JSONArray optionalJSON = jsonObject.optJSONArray("optional");
-            if (optionalJSON != null) {
-                for (int i = 0; i < optionalJSON.length(); ++i) {
-                    JSONObject keyValueDict = optionalJSON.getJSONObject(i);
-                    String key = keyValueDict.names().getString(0);
-                    String value = keyValueDict.getString(key);
-                    constraints.optional.add(
-                            new MediaConstraints.KeyValuePair(key, value));
-                }
-            }
-        } catch (JSONException e) {
-            Log.e(TAG, "Failed to parse MediaConstraints from JSON: " + e.getMessage());
-        }
-        return constraints;
-    }
-
-    // Return the list of ICE servers described by a WebRTCPeerConnection
-    // configuration string.
-    private static LinkedList<IceServer> iceServersFromPCConfigJSON(JSONArray jsonArray) {
-        LinkedList<IceServer> ret = new LinkedList<IceServer>();
-        try {
-            Log.d(TAG, "ICE server JSON: " + jsonArray.toString(4));
-            for (int i = 0; i < jsonArray.length(); ++i) {
-                JSONObject server = jsonArray.getJSONObject(i);
-                String url = server.getString("url");
-                String username =
-                        server.has("username") ? server.getString("username") : "";
-                String credential =
-                        server.has("credential") ? server.getString("credential") : "";
-                credential = 
-                        server.has("password") ? server.getString("password") : credential;
-                ret.add(new IceServer(url, username, credential));
-            }
-        } catch (JSONException e) {
-            Log.e(TAG, "Failed to parse ICE Servers from PC Config JSON: " + e.getMessage());
-        }
-        return ret;
-    }
+    
 }
